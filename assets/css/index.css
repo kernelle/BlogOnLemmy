@@ -94,7 +94,8 @@ h3{
 	}
 }
 
-ul{
+#loadmore ul,
+nav ul{
 	list-style-type: none;
 	flex-direction: row;
 	display: flex;
@@ -104,7 +105,8 @@ ul{
 	padding-left: 20px;
 }
 
-ul>li{
+#loadmore ul>li,
+nav ul>li{
 	/*width: 100%;*/
 	margin-right: 1em;
 	padding-top: 0.07em;
@@ -112,7 +114,7 @@ ul>li{
 }
 
 .darkmode ul>li{
-	background-color: rgb(24, 24, 24, 0.7);
+	background-color: rgb(24, 24, 24, 0.7) !important;
 }
 
 #mainnav>ul{
