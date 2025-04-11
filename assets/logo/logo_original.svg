@@ -1,0 +1,6 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="90" stroke="#041B78" stroke-width="20" fill="#F5F5F5" fill-opacity="0.7" />
+  <text x="102" y="124" font-family="Courier New" font-size="90" font-weight="bold" fill="#041B78" text-anchor="middle" dominant-baseline="central">
+    ML
+  </text>
+</svg>

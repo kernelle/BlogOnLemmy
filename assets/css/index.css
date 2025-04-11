@@ -1,0 +1,321 @@
+* {
+  box-sizing: border-box;
+}
+
+html{
+	scroll-behavior: smooth;
+}
+
+body{
+	margin:0;
+}
+
+.lightmode {
+	color: #242424;
+	background: #F5F5F5;
+}
+
+.darkmode {
+	color: #F5F5F5;
+	background: #181818;
+}
+
+.darkmode a{
+	color: #F5F5F5;
+}
+
+.darkmode .unselected{
+	border: solid 3px #fff9f95e !important;
+}
+
+.darkmode h1{
+	color: #F5F5F5;
+}
+
+.darkmode .fade>b{
+	color: #919191;
+}
+
+#darkmodeToggle>svg{
+	color: #404040;
+}
+
+.darkmode #darkmodeToggle>svg{
+	color: #ffa700;
+}
+
+.darkmode #returnTop{
+	border-color: white;
+	border-style: solid;
+	border-width: 2px;
+}
+
+body{
+	font-family: 'Courier New', monospace;
+	line-height: 1.4;
+	max-width: 1010px;
+	margin: auto;
+	padding-left: min(50px, 3%);
+    padding-right: min(50px, 3%);
+}
+
+
+h1{
+	text-align: center;
+	font-weight: 100;
+	font-size: 30px;
+	font-size: 2rem;
+	margin-bottom: 1rem;
+	color: #041B78;
+	font-weight: bold;
+	/*-webkit-text-stroke: 2px white;*/
+}
+
+h2>a>sub{
+	font-size: 0.5em;
+	/*color:#242424*/
+}
+
+h3{
+	text-align: center;
+	margin:0.4em;
+}
+
+@media screen and (max-width: 700px) {
+	nav {
+		display: block;
+	}
+}
+
+@media screen and (min-width: 700px) {
+	nav{
+		display: flex;
+		justify-content: space-between;
+	}
+}
+
+ul{
+	list-style-type: none;
+	flex-direction: row;
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	flex-wrap: wrap;
+	padding-left: 20px;
+}
+
+ul>li{
+	/*width: 100%;*/
+	margin-right: 1em;
+	padding-top: 0.07em;
+	background-color: rgb(245, 245, 245, 0.7);
+}
+
+.darkmode ul>li{
+	background-color: rgb(24, 24, 24, 0.7);
+}
+
+#mainnav>ul{
+	justify-content:space-between;
+}
+
+nav>div>ul>li>a,
+nav>div>ul>li>svg{
+	cursor:pointer;
+	color: #404040;
+	text-decoration: underline; 
+	text-transform: uppercase;
+}
+
+article{
+	padding: 0 1rem;
+	margin-bottom: 1.5em;
+	line-height: 1.2;
+	word-spacing: -3px;
+	letter-spacing: -0.1px;
+	border: solid 3px #041B78;
+	box-shadow: 5px 5px 2px #12008c;
+}
+
+.border{
+	border: solid 3px #041B78;
+	box-shadow: 5px 5px 2px #12008c;
+}
+
+article>div{
+	
+}
+
+#cookierebel li{
+	flex-grow: 1;
+	max-width: 15em;
+}
+
+blockquote + br{
+	position: absolute;
+	visibility: hidden;
+    display: none;
+}
+
+blockquote + br + br{
+	position: absolute;
+	visibility: hidden;
+    display: none;
+}
+
+.readmore{	
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	max-width: 50em;
+	margin:auto;
+	margin-top: 1.5em;
+	border-top: 2px solid #041B78;
+}
+
+.readmore > a{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.fade{
+	color: #40404080;
+}
+
+.content{
+	margin-top: 1em;
+	overflow-wrap: break-word;
+}
+
+.content img{
+	margin: auto;
+	display: block;
+	max-height: 30em;
+	max-width: 100%;
+}
+
+#filters{
+	/*margin-left: 6em;*/
+}
+
+.boxy li{
+	border-radius: 25px;
+	border: solid 3px #0000000f;
+	padding-left: 1em;
+	padding-right: 1em;
+	cursor: pointer;
+	min-width: 5em;
+	text-align: center;
+	margin-bottom: 0.5em;
+	overflow-wrap: break-word;
+}
+
+#fadeLoad {
+    -webkit-filter: blur(7px);
+    -moz-filter: blur(7px);
+    -o-filter: blur(7px);
+    -ms-filter: blur(7px);
+    filter: blur(7px);
+	animation: fadeLoad 2s infinite;
+	animation-timing-function: cubic-bezier(.45,.05,.55,.95);
+	display: block;
+}
+
+@keyframes fadeLoad {
+  50% { -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(10px);
+	}
+}
+
+#filters>p{
+	margin: auto;
+	text-align: center;
+}
+
+.selected{
+	border: solid 3px #041B78 !important;
+}
+
+.disabled{
+	visibility:hidden;
+	display:none;
+}
+
+.smallBlock{
+	line-height: 1.1;
+	font-size: 0.8em;
+	margin-left: 10%;
+}
+
+footer{
+	padding: 0 5rem;
+}
+
+footer>p{
+	text-align: center;
+	border-top: 3px solid #041B78;
+	padding-top: 0.5em;
+	width: 100%;
+}
+
+#returnTop{
+	cursor:pointer;
+	height: 4em;
+	width: 4em;
+	background-color: #041B78;
+	border-radius: 50%;
+	position: fixed;
+	bottom: 2em;
+	left: 2em;
+	display: none;
+	color: white;
+}
+
+#returnTop>svg{
+	margin: auto;
+}
+
+.flexy{
+	display: flex;
+	justify-content: space-around;
+}
+
+#loadmore{
+	display: none;
+}
+
+#aboutme{
+	width: 100%;
+	height: 30em;
+	margin-bottom: 1em;
+	cursor:pointer;
+}
+
+#floatnav{
+	position: fixed;
+	right: 0;
+	top: 20px;
+}
+
+.collapse{
+	display: none;
+}
+
+.uncollapse{
+	cursor:pointer;
+	text-decoration: underline; 
+	text-align: right;
+	float: left;
+	margin-top: 0px;
+}
+p{
+	width: fit-content;
+}
+
+/* Chrome highlights canvas when tapped... */
+canvas {
+  -webkit-tap-highlight-color: transparent;
+}
