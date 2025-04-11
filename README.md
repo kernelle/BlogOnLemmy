@@ -1,3 +1,5 @@
+# [./Martijn.sh > Blog](https://martijn.sh)
+
 ##### [Lemmydocs 7:4](https://join-lemmy.org/docs/users/06-other-features.html) – Thou shall create a blog
 
 ## Features
