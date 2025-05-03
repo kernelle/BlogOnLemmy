@@ -131,6 +131,13 @@ nav>div>ul>li>svg{
 	text-transform: uppercase;
 }
 
+#error{
+    display: none;
+    border: solid 3px #783004;
+    box-shadow: 5px 5px 2px #783004;
+
+}
+
 article{
 	padding: 0 1rem;
 	margin-bottom: 1.5em;

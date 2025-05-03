@@ -37,6 +37,7 @@ const About_me = [
 	"Freelancer",
 	"LLL & HLL-Coder",
 	"Audiophile",
+	"Maker",
 	"Analyst",
 	"Gamer",
 	"Tinkerer",
@@ -48,7 +49,7 @@ const About_me = [
 
 // Hide these post only once when the main page loads
 //	- Currate main page 
-let HidePostsOnce = [  ]; //14956
+let HidePostsOnce = [ 14956 ]; //
 
 /**********************************************************
 					Global Class
@@ -391,6 +392,7 @@ class PageBuilder {
 	}
 	
 	static showLoader( loader ){
+		let fadeLoad = document.getElementById("fadeLoad")
 		fadeLoad.style.display = loader ? "block" : "none";
 	}
 	
@@ -605,6 +607,7 @@ class PostBuilder {
 	
 	// Fetch -> API
 	refresh( ){
+		PostBuilder.hideError();
 		PageBuilder.showLoader( true );
 		if(this.pagetype === "filters"){
 			//TODO show loader at bottom page when loading next 10 posts
@@ -621,7 +624,8 @@ class PostBuilder {
 					value.c_id.forEach((el) => {
 						fetch( postListAPI  + el)
 							.then((response) => response.json())
-							.then((json) => this.processCommunity( json ));
+							.then((json) => this.processCommunity( json ))
+							.catch((error) => PostBuilder.displayError());
 					});
 				}
 			}
@@ -631,10 +635,23 @@ class PostBuilder {
 			
 			fetch(Settings.lemmy_instance + "/api/v3/post?id=" + this.postNumber)
 				.then((response) => response.json())
-				.then((json) => this.processPost( json ));	
+				.then((json) => this.processPost( json ))
+				.catch((error) => PostBuilder.displayError());
 		}
 	}
+
+	static displayError(){
+		let errorArticle = document.getElementById("error");
+		errorArticle.style.display = "block";
+		PageBuilder.showLoader( false );
+	}
 	
+	static hideError(){
+		let errorArticle = document.getElementById("error");
+		errorArticle.style.display = "none";
+	}
+
+
 	displayContent(posts){
 		let resultBuilder = "";
 		let c_id = 0;
