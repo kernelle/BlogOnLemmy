@@ -1,5 +1,4 @@
 "use strict";
-import snarkdown from './snarkdown.js';
 
 const Settings = {
 	username: "kernelle",
