@@ -11,8 +11,8 @@ const fs = require('fs');
 const { minify } = require('html-minifier');
 const Inliner = require('inliner');
 
-const inputFile = "index.html";
-const outputFile = "index_min.html";
+const inputFile = "BlogOnLemmy/index.html";
+const outputFile = "index.html";
 
 const options = {
     collapseWhitespace: true,
@@ -23,7 +23,7 @@ const options = {
 };
 
 try {
-    new Inliner('index.html', function (error, html) {
+    new Inliner(inputFile, function (error, html) {
          const minifiedContent = minify(html, options);
          fs.writeFileSync(outputFile, minifiedContent, 'utf-8');
          console.log(`Combined & Minified!\nInput: ${inputFile}\nOutput: ${outputFile}`);
