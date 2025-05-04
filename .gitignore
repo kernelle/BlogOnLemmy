@@ -6,3 +6,5 @@ package-lock.json
 package.json
 
 index_*.html
+
+*.br

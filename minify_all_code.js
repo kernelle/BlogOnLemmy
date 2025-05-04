@@ -6,7 +6,8 @@
 const fs = require('fs');
 // Yeah so I ended up using two minifiers
 //   mainly because inliner supports native file combining
-//   and html-inliner does a better job minifying, exactly 30% smaller after
+//   and html-inliner does a better job minifying (although far from perfect)
+//Exactly 30% to gain by running it through the second
 const { minify } = require('html-minifier');
 const Inliner = require('inliner');
 
@@ -25,7 +26,7 @@ try {
     new Inliner('index.html', function (error, html) {
          const minifiedContent = minify(html, options);
          fs.writeFileSync(outputFile, minifiedContent, 'utf-8');
-         console.log(`Successfully minified:\nInput: ${inputFile}\nOutput: ${outputFile}`);
+         console.log(`Combined & Minified!\nInput: ${inputFile}\nOutput: ${outputFile}`);
     });
 
 

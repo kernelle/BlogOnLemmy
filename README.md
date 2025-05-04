@@ -16,6 +16,10 @@
 - No backend: serving a single lightweight page that can be hosted anywhere, including GitHub
 - HTML, CSS and ES6 JavaScript. That's it.
 
+## Latest News
+- Combining & Minification using a node script
+- bash file to build the site and generate brotli compressed files
+
 #### TODO
 - Possible compatibility issues with older iOS devices. Let me know if you encounter an issue! I'll be cleaning up the code in the meantime.
 - The only class not written by me is the markdown-html translation layer for which I'm using [snarkdown](https://github.com/developit/snarkdown). It does so using regex queries. As to not completely re-invent the wheel I've forked it for this purpose, but I'd like to write one myself. 
