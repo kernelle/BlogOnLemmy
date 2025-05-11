@@ -324,6 +324,7 @@ footer>p{
 }
 p{
 	width: fit-content;
+	text-align: justify;
 }
 
 /* Chrome highlights canvas when tapped... */
