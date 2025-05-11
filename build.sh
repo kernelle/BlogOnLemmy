@@ -7,5 +7,5 @@ echo "Done!"
 echo "Build files: index.html & index.html.br"
 
 #Optional Move
-echo "Moved files to GitPages"
 mv index* ../kernelle.github.io/
+echo "Moved files to GitPages"

@@ -3,7 +3,9 @@
 const Settings = {
 	username: "kernelle",
 	firstname: "Martijn",
-	lemmy_instance: "https://0d.gs"
+	lemmy_instance: "https://0d.gs",
+	// I use seperate one, if you don't use this then make it the same as lemmy_instance
+	cdnurl: "https://cdn.0d.gs"
 }
 
 // Lemmy's API only supports community_id on user profiles for now
@@ -514,7 +516,6 @@ class PostBuilder {
 		return false;
 	}
 	
-	//TODO: handle error on fetch
 	processPost( json ){
 		PageBuilder.showLoader( false );
 		document.getElementById('intro').style.display = "none";
@@ -612,7 +613,7 @@ class PostBuilder {
 			//TODO show loader at bottom page when loading next 10 posts
 			let addPageNumber = this.loadmorePage > 1 ? "&page=" + this.loadmorePage : "";
 			
-			const postListAPI = Settings.lemmy_instance 
+			const postListAPI = Settings.cdnurl
 								+ "/api/v3/user?username="
 								+Settings.username
 								+addPageNumber
@@ -621,7 +622,7 @@ class PostBuilder {
 			for (const [key, value] of Object.entries(Community_filters)) {
 				if(value.enabled){
 					value.c_id.forEach((el) => {
-						fetch( postListAPI  + el)
+						fetch( postListAPI  + el, { cache:"force-cache"})
 							.then((response) => response.json())
 							.then((json) => this.processCommunity( json ))
 							.catch((error) => PostBuilder.displayError());
@@ -632,7 +633,7 @@ class PostBuilder {
 		}else if(this.pagetype === "post"){
 			PageBuilder.htmlFilterClear();
 			
-			fetch(Settings.lemmy_instance + "/api/v3/post?id=" + this.postNumber)
+			fetch(Settings.cdnurl + "/api/v3/post?id=" + this.postNumber)
 				.then((response) => response.json())
 				.then((json) => this.processPost( json ))
 				.catch((error) => PostBuilder.displayError());
