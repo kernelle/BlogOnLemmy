@@ -52,6 +52,8 @@ const About_me = [
 //	- Currate main page 
 let HidePostsOnce = [ 14956 ]; //
 
+let AddPostsManual = [ 5074952 ]
+
 /**********************************************************
 					Global Class
 ***********************************************************/
@@ -516,11 +518,14 @@ class PostBuilder {
 		return false;
 	}
 	
-	processPost( json ){
+	processPost( json, onlyPost ){
 		PageBuilder.showLoader( false );
-		document.getElementById('intro').style.display = "none";
+		if(onlyPost){
+			document.getElementById('intro').style.display = "none";
+		}
+
 		let post = this.parsePost(json.post_view);
-		this.displayContent([ post ]);
+		this.displayContent( this.checkPostOrderOrDupes( [ post ] ) );
 		PageBuilder.showLoadmore( false );
 	}
 		
@@ -610,34 +615,45 @@ class PostBuilder {
 		PostBuilder.hideError();
 		PageBuilder.showLoader( true );
 		if(this.pagetype === "filters"){
-			//TODO show loader at bottom page when loading next 10 posts
-			let addPageNumber = this.loadmorePage > 1 ? "&page=" + this.loadmorePage : "";
-			
-			const postListAPI = Settings.cdnurl
-								+ "/api/v3/user?username="
-								+Settings.username
-								+addPageNumber
-								+"&sort=New&community_id=";
-	
 			for (const [key, value] of Object.entries(Community_filters)) {
 				if(value.enabled){
+					if(value.friendly_name == "Blog"){
+						AddPostsManual.forEach((postNr) => this.fetchPost( postNr, false ));
+					}
+
 					value.c_id.forEach((el) => {
-						fetch( postListAPI  + el, { cache:"force-cache"})
-							.then((response) => response.json())
-							.then((json) => this.processCommunity( json ))
-							.catch((error) => PostBuilder.displayError());
+						this.fetchCommunity( this.loadmorePage, el )
 					});
 				}
 			}
-			
+
 		}else if(this.pagetype === "post"){
 			PageBuilder.htmlFilterClear();
-			
-			fetch(Settings.cdnurl + "/api/v3/post?id=" + this.postNumber)
-				.then((response) => response.json())
-				.then((json) => this.processPost( json ))
-				.catch((error) => PostBuilder.displayError());
+
+			this.fetchPost( this.postNumber, true )
 		}
+	}
+
+	fetchPost( postNr, onlyPost ){
+		fetch(Settings.cdnurl + "/api/v3/post?id=" + postNr)
+		.then((response) => response.json())
+		.then((json) => this.processPost( json, onlyPost ))
+		.catch((error) => PostBuilder.displayError());
+	}
+
+	fetchCommunity( pageNumber, c_id ){
+		let addPageNumber = pageNumber > 1 ? "&page=" + pageNumber : "";
+
+		const postListAPI = Settings.cdnurl
+			+ "/api/v3/user?username="
+			+ Settings.username
+			+ addPageNumber
+			+"&sort=New&community_id="
+			+ c_id;
+		fetch( postListAPI, { cache:"force-cache"})
+		.then((response) => response.json())
+		.then((json) => this.processCommunity( json ))
+		.catch((error) => PostBuilder.displayError());
 	}
 
 	static displayError(){
