@@ -434,6 +434,7 @@ class PostBuilder {
 		this.singletonLoadmore = false;
 		
 		this.overridePermalink = this.overridePermalink.bind(this);
+		this.expandOption = this.expandOption.bind(this);
 						
 		this.refresh();
 	}
@@ -598,13 +599,17 @@ class PostBuilder {
 		// 1):
 		let title = post.post.name;
 		let hostnamePost = typeof(post.post.url) !== 'undefined' ? "(" + new URL( post.post.url ).hostname + ")": "";
-		
+
 		// 2):
 		if(typeof post.post.url !== 'undefined'){
 			// Seperated <a> link for preview and url 
 			//	- To break the underline between elements
 			title = `<a href="${post.post.url}">${title}</a> `;
 			title += `<a href="${post.post.url}"><sub>${hostnamePost}</sub></a>`;
+
+			if( post.post.url.split('.').pop() == 'mp4' ){
+				title += '<svg class="videoExpand" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-film"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
+			}
 		}
 		
 		return title;
@@ -720,6 +725,11 @@ class PostBuilder {
 		document.querySelectorAll(`.community${c_id} .onepagelink`).forEach(( pm ) => {
 			pm.addEventListener( "click", this.overridePermalink );
 		});
+
+		document.querySelectorAll(`.videoExpand`).forEach(( vE ) => {
+			vE.addEventListener( "click", this.expandOption );
+		});
+
 		
 		this.removeOverrideEvents();
 		this.addOverrideEvents();
@@ -763,6 +773,37 @@ class PostBuilder {
 		document.querySelectorAll(".onepagelink").forEach(( pm ) => {
 			pm.outerHTML = pm.outerHTML;
 		});
+	}
+
+	expandOption(e){
+		if(e.target.nodeName != 'svg'){
+			return this.expandOption( { 'target': e.target.parentNode } )
+		}else{
+			let expandedElement = this.hasExpandedElement(e.target.parentNode.parentNode)
+			if( !expandedElement){
+				let link = e.target.parentNode.children[0].href
+				let video = document.createElement('video');
+
+				video.classList.add("expand")
+				video.src = link;
+				video.autoplay = true;
+				video.loop = true;
+
+				e.target.parentNode.after( video )
+			}else(
+				expandedElement.remove()
+			)
+		}
+	}
+
+	hasExpandedElement(parent) {
+
+		for (const el of parent.children) {
+			if(el.classList.toString() == "expand"){
+				return el;
+			}
+		}
+		return false;
 	}
 	
 	// Make post expandable

@@ -76,6 +76,12 @@ h2>a>sub{
 	/*color:#242424*/
 }
 
+h2>svg{
+	margin-bottom: -.4em;
+	margin-left: 0.3em;
+	cursor:pointer;
+}
+
 h3{
 	text-align: center;
 	margin:0.4em;
@@ -198,7 +204,8 @@ blockquote + br + br{
 	overflow-wrap: break-word;
 }
 
-.content img{
+.content img,
+.content video{
 	margin: auto;
 	display: block;
 	max-height: 30em;
@@ -330,4 +337,8 @@ p{
 /* Chrome highlights canvas when tapped... */
 canvas {
   -webkit-tap-highlight-color: transparent;
+}
+
+video{
+	max-width: 100%;
 }
