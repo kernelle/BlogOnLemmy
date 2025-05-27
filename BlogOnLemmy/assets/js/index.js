@@ -521,12 +521,22 @@ class PostBuilder {
 	
 	processPost( json, onlyPost ){
 		PageBuilder.showLoader( false );
-		if(onlyPost){
-			document.getElementById('intro').style.display = "none";
-		}
+
 
 		let post = this.parsePost(json.post_view);
 		this.displayContent( this.checkPostOrderOrDupes( [ post ] ) );
+
+		if(onlyPost){
+			document.getElementById('intro').style.display = "none";
+
+			//Open video when loading only the post
+			let expandOption = document.getElementsByClassName("videoExpand")
+			if( expandOption.length > 0 ){
+				const cE = new Event("click");
+				expandOption[0].dispatchEvent(cE);
+			}
+		}
+
 		PageBuilder.showLoadmore( false );
 	}
 		
@@ -782,14 +792,22 @@ class PostBuilder {
 			let expandedElement = this.hasExpandedElement(e.target.parentNode.parentNode)
 			if( !expandedElement){
 				let link = e.target.parentNode.children[0].href
+
+				let container = document.createElement('div');
+				let loadtext = document.createElement('span');
 				let video = document.createElement('video');
 
-				video.classList.add("expand")
+				container.classList.add("expand")
+				loadtext.classList.add("loadtext")
+				loadtext.innerText = "Loading Content..."
 				video.src = link;
 				video.autoplay = true;
 				video.loop = true;
 
-				e.target.parentNode.after( video )
+				container.appendChild( loadtext )
+				container.appendChild( video )
+
+				e.target.parentNode.after( container )
 			}else(
 				expandedElement.remove()
 			)

@@ -341,4 +341,19 @@ canvas {
 
 video{
 	max-width: 100%;
+	width:100%;
+	aspect-ratio: 1 / 0.9;
+	max-height: 35em;
+	margin: auto;
 }
+
+.loadtext{
+	position: absolute;
+	overflow: hidden;
+	text-align: center;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index:-1;
+}
+
