@@ -60,15 +60,23 @@ body{
 }
 
 
-h1{
+h1,
+h1>a{
 	text-align: center;
 	font-weight: 100;
-	font-size: 30px;
-	font-size: 2rem;
+	font-size: 1.9rem;
 	margin-bottom: 1rem;
 	color: #041B78;
 	font-weight: bold;
 	/*-webkit-text-stroke: 2px white;*/
+}
+
+h1>a{
+	text-decoration: none;
+	margin:0.3em;
+	font-size:0.7em;
+	position:relative;
+	top:-0.3em;
 }
 
 h2>a>sub{
