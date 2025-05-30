@@ -668,7 +668,11 @@ class PostBuilder {
 		fetch( postListAPI, { cache:"force-cache"})
 		.then((response) => response.json())
 		.then((json) => this.processCommunity( json ))
-		.catch((error) => PostBuilder.displayError());
+		.catch((error) => this.handleErrorCommunity());
+	}
+
+	handleErrorCommunity(){
+		PostBuilder.displayError()
 	}
 
 	static displayError(){
