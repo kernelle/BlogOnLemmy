@@ -199,9 +199,18 @@ blockquote + br + br{
 	border-top: 2px solid #041B78;
 }
 
+.readmore p {
+	margin-top: 0.5em;
+}
+
 .readmore > a{
 	margin-top: 1em;
 	margin-bottom: 1em;
+}
+
+.readmore svg {
+	position: relative;
+	top: 0.3em;
 }
 
 .fade{
@@ -340,6 +349,7 @@ footer>*{
 	text-align: right;
 	float: left;
 	margin-top: 0px;
+	margin-bottom: 0;
 }
 p{
 	width: fit-content;
