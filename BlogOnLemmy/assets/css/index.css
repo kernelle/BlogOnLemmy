@@ -71,12 +71,13 @@ h1>a{
 	/*-webkit-text-stroke: 2px white;*/
 }
 
-h1>a{
-	text-decoration: none;
+h1>a,
+.arrow{
+
 	margin:0.3em;
-	font-size:0.7em;
 	position:relative;
-	top:-0.3em;
+	/*top:-0.3em;text-decoration: none;*/
+	top:-0.15em;
 }
 
 h2>a>sub{
@@ -278,13 +279,17 @@ blockquote + br + br{
 
 footer{
 	padding: 0 5rem;
+	border-top: 3px solid #041B78;
+	width: 83%;
+	margin: auto;
+	padding-top: 0.4em;
 }
 
-footer>p{
-	text-align: center;
-	border-top: 3px solid #041B78;
-	padding-top: 0.5em;
-	width: 100%;
+footer>*{
+	text-align: center !important;
+	width: 100% !important;
+	margin-top:0.1em;
+	margin-bottom:0.5em;
 }
 
 #returnTop{
@@ -364,4 +369,3 @@ video{
 	bottom: 0;
 	z-index:-1;
 }
-
