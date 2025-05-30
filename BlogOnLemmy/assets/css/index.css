@@ -278,7 +278,6 @@ blockquote + br + br{
 }
 
 footer{
-	padding: 0 5rem;
 	border-top: 3px solid #041B78;
 	width: 83%;
 	margin: auto;
