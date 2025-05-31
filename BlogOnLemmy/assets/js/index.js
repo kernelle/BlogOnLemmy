@@ -497,10 +497,10 @@ class PostBuilder {
 	}
 	
 	// API adaptor for post object
-	parsePost( post ){
+	parsePost( post, crossposts=[] ){
 		let fullactorID = Settings.lemmy_instance + '/u/' + Settings.username;
 		
-		if(post.creator.actor_id === fullactorID && post.counts.score >= 1 ){
+		if(post.creator.actor_id === fullactorID && post.counts.score >= -3 ){
 			const dateParsed = new Date( Date.parse( post.counts.published ) );
 			
 			// Parsed post content
@@ -514,6 +514,16 @@ class PostBuilder {
 				id: post.counts.post_id,
 				upvotes: post.counts.upvotes
 			};
+
+			// Parse crosspost upvotes
+			crossposts.forEach((xpost) => {
+				if(postParsed.upvotes < xpost.counts.upvotes){
+					postParsed.upvotes = xpost.counts.upvotes;
+					postParsed.url = xpost.post.url;
+				}
+
+			});
+
 			return postParsed; 
 		}
 		return false;
@@ -523,7 +533,7 @@ class PostBuilder {
 		PageBuilder.showLoader( false );
 
 
-		let post = this.parsePost(json.post_view);
+		let post = this.parsePost(json.post_view, json.cross_posts);
 		this.displayContent( this.checkPostOrderOrDupes( [ post ] ) );
 
 		if(onlyPost){
@@ -688,7 +698,6 @@ class PostBuilder {
 		let c_id = 0;
 		
 		if(posts[0] === false){
-			//TODO: Show error to user
 			return;
 		}
 		
@@ -702,7 +711,7 @@ class PostBuilder {
 			// Posts are shared or written, link = shared
 			let sharedBy = typeof post.url !== "undefined" ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
-			let votetext = post.upvotes > 50 ? post.upvotes + ' <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
+			let votetext = post.upvotes > 50 ? post.upvotes + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance

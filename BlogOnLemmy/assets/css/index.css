@@ -73,11 +73,10 @@ h1>a{
 
 h1>a,
 .arrow{
-
-	margin:0.3em;
+	text-decoration: none;
+	/*margin:0.3em;
 	position:relative;
-	/*top:-0.3em;text-decoration: none;*/
-	top:-0.15em;
+	top:-0.15em;*/
 }
 
 h2>a>sub{
@@ -377,4 +376,9 @@ video{
 	right: 0;
 	bottom: 0;
 	z-index:-1;
+}
+
+.bottom{
+	text-align: center;
+	padding-bottom:.5em;
 }
