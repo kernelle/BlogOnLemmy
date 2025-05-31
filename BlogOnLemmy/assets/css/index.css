@@ -99,13 +99,20 @@ h3{
 	nav {
 		display: block;
 	}
+	#mainnav{
+		width: 94%;
+		margin: auto;
+	}
 }
 
 @media screen and (min-width: 700px) {
 	nav{
 		display: flex;
 		justify-content: space-between;
+		margin: auto;
+		width: 90%
 	}
+
 }
 
 #cookierebel,
@@ -117,7 +124,7 @@ nav ul{
 	width: 100%;
 	justify-content: center;
 	flex-wrap: wrap;
-	padding-left: 20px;
+	padding-left: 0px;
 }
 
 #cookierebel>li,
@@ -127,6 +134,10 @@ nav ul>li{
 	margin-right: 1em;
 	padding-top: 0.07em;
 	background-color: rgb(245, 245, 245, 0.7);
+}
+
+nav ul>li:last-child{
+	margin-right: 0;
 }
 
 .darkmode ul>li{
@@ -306,8 +317,8 @@ footer>*{
 	background-color: #041B78;
 	border-radius: 50%;
 	position: fixed;
-	bottom: 2em;
-	left: 2em;
+	bottom: 4em;
+	right: 2em;
 	display: none;
 	color: white;
 }
