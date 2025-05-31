@@ -17,7 +17,7 @@ let Community_filters = {
 		friendly_name: "Blog" 
 	},
 	"linkdumps": {
-		enabled: true,
+		enabled: false,
 		c_id: [ 59105 ],
 		//c_name: [ "linkdumps@0d.gs" ],
 		friendly_name: "LinkDumps" 
@@ -50,7 +50,7 @@ const About_me = [
 
 // Hide these post only once when the main page loads
 //	- Currate main page 
-let HidePostsOnce = [ 14956 ]; //
+let HidePostsOnce = [  ]; // 14956
 
 let AddPostsManual = [ 5074952 ]
 
@@ -285,6 +285,9 @@ class PageBuilder {
 		for (const [key, value] of Object.entries(Community_filters)) {
 			let selectedID = value.enabled ? "selected" : "unselected";
 			filterHTML += `<li tabindex="0" class="${ selectedID }">${ value.friendly_name }</li>`;
+			if(value.enabled){
+				PageBuilder.changeTitle( value.friendly_name );
+			}
 		}
 		
 		document.getElementById("filters").children[1].innerHTML = filterHTML;
@@ -298,11 +301,19 @@ class PageBuilder {
 		
 		PageBuilder.htmlFilterClear();
 		e.srcElement.classList = [ "selected" ];
+		PageBuilder.changeTitle( e.srcElement.innerText );
+
 		
 		main.setFilter( filter );	
 		
 		PageBuilder.scrollToTop( true );
 		document.getElementById('intro').style.display = "none";
+	}
+
+	static changeTitle( change ){
+		let titletext = './Martijn.sh > ' + change;
+		document.getElementsByTagName('h1')[0].innerText = titletext;
+		document.title = titletext;
 	}
 	
 	static floatNav( enable, navbar, offset ){
