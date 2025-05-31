@@ -309,18 +309,12 @@ class PageBuilder {
 		
 		PageBuilder.htmlFilterClear();
 		e.srcElement.classList = [ "selected" ];
+		main.setFilter( filter );	
 		PageBuilder.changeTitle( e.srcElement.innerText );
-
-
-		main.setFilter( filter );
-
 
 		PageBuilder.scrollToTop( true );
 		document.getElementById('intro').style.display = "none";
 	}
-
-
-
 	static changeTitle( change ){
 		let titletext = './Martijn.sh > ' + change;
 		document.getElementsByTagName('h1')[0].innerText = titletext;
