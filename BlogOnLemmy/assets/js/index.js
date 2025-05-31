@@ -512,14 +512,15 @@ class PostBuilder {
 				date: dateParsed.getDate() + '/' + (dateParsed.getMonth()+1) + '/' + dateParsed.getFullYear(),
 				dateObject: dateParsed,
 				id: post.counts.post_id,
-				upvotes: post.counts.upvotes
+				upvotes: post.counts.upvotes,
+				lemmy_url: post.post.ap_id
 			};
 
 			// Parse crosspost upvotes
 			crossposts.forEach((xpost) => {
 				if(postParsed.upvotes < xpost.counts.upvotes){
 					postParsed.upvotes = xpost.counts.upvotes;
-					postParsed.url = xpost.post.url;
+					postParsed.lemmy_url = xpost.post.ap_id;
 				}
 
 			});
@@ -715,7 +716,7 @@ class PostBuilder {
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
-			let verseReference = "https://lemmyverse.link/" + Settings.lemmy_instance.substring(8) + "/post/"+  post.id;
+			let verseReference = "https://lemmyverse.link/" + post.lemmy_url.substring(8);
 			let articleTemplate = `<article>
 				<div>
 					<header>
