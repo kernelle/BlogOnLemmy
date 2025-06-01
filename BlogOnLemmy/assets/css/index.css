@@ -53,7 +53,7 @@ body{
 body{
 	font-family: 'Courier New', monospace;
 	line-height: 1.4;
-	max-width: 1010px;
+	max-width: 64em;
 	margin: auto;
 	padding-left: min(50px, 3%);
     padding-right: min(50px, 3%);
@@ -64,7 +64,7 @@ h1,
 h1>a{
 	text-align: center;
 	font-weight: 100;
-	font-size: 1.9rem;
+	font-size: 1.8rem;
 	margin-bottom: 1rem;
 	color: #041B78;
 	font-weight: bold;
@@ -99,35 +99,53 @@ h3{
 	nav {
 		display: block;
 	}
+	#socials,
 	#mainnav{
-		width: 94%;
+		width: 94% !important;
 		margin: auto;
 	}
-	#floatnav{
-		max-width: 90% !important;
+	#mainnav > ul{
+		justify-content: space-between !important;
 	}
+	#floatnav{
+		max-width: 95% !important;
+	}
+
 }
 
-@media screen and (min-width: 700px) {
+@media screen and (min-width: 701px) {
 	nav{
 		display: flex;
 		justify-content: space-between;
 		margin: auto;
 		width: 90%
 	}
-
+	#socials ul{
+		width: 5em;
+		position: relative;
+		margin-left: auto;
+		margin-right: 0;
+	}
+	#mainnav ul{
+		display: block;
+	}
+	#filters{
+		width: 70%;
+	}
+	#floatnav{
+		width: 53%;
+	}
 }
 
 #cookierebel,
 #loadmore ul,
 nav ul{
 	list-style-type: none;
-	flex-direction: row;
 	display: flex;
 	width: 100%;
 	justify-content: center;
-	flex-wrap: wrap;
 	padding-left: 0px;
+	flex-flow: row wrap;
 }
 
 #cookierebel>li,
@@ -140,16 +158,20 @@ nav ul>li{
 	background-color: rgb(245, 245, 245, 0.7);
 }
 
-nav ul>li:last-child{
-	margin-right: 0;
-}
-
 .darkmode ul>li{
 	background-color: rgb(24, 24, 24, 0.7) !important;
 }
 
+#mainnav{
+	width: 20%;
+}
+
 #mainnav>ul{
-	justify-content:space-between;
+	justify-content: flex-start;
+}
+
+#socials{
+	width: 20%;
 }
 
 nav>div>ul>li>a,
@@ -394,8 +416,11 @@ video{
 	text-align: center;
 	left: 0;
 	right: 0;
-	bottom: 0;
 	z-index:-1;
+	width: 100%;
+	display: block;
+	position: absolute;
+	margin-top: 10em;
 }
 
 .bottom{

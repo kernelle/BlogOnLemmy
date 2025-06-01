@@ -55,7 +55,7 @@ const About_me = [
 
 // Hide these post only once when the main page loads
 //	- Currate main page 
-let HidePostsOnce = [  ]; // 14956
+let HidePostsOnce = [ 5750794 ]; // 14956
 
 let AddPostsManual = [ 5074952 ]
 
