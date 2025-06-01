@@ -13,24 +13,28 @@ let Community_filters = {
 	"blog": {
 		enabled: true,
 		c_id: [ 154 ],
+		manual_posts: [ 5074952 ],
 		//c_name: [ "self@0d.gs" ],
 		friendly_name: "Blog" 
 	},
 	"linkdumps": {
 		enabled: false,
 		c_id: [ 59105 ],
+		manual_posts: [ ],
 		//c_name: [ "linkdumps@0d.gs" ],
 		friendly_name: "LinkDumps" 
 	},
 	"news": {
 		enabled: false,
-		c_id: [ 884 ],
+		c_id: [ 884, 58587 ],
+		manual_posts: [ ],
 		//c_name: [ "belgium@0d.gs" ],
 		friendly_name: "News" 
 	},
 	"all": {
 		enabled: false,
-		c_id: [ ],
+		c_id: [ 2547 ],
+		manual_posts: [ ],
 		friendly_name: "All"
 	}
 };
@@ -500,6 +504,9 @@ class PostBuilder {
 	
 	static markdownProcess( content ){
 		let p = content;
+		if( typeof p === 'undefined' || p == ""){
+			return "";
+		}
 		//Simple pattern to match standalone URL's, probably will have many edge cases
 		// - not replacing if preceeded by ( to contain markdown
 		const pattern = /(?<!\()\b((?:(?:https?|http):\/\/)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
@@ -672,17 +679,16 @@ class PostBuilder {
 		if(this.pagetype === "filters"){
 			for (const [key, value] of Object.entries(Community_filters)) {
 				if(value.enabled || setall){
-					if(key == 'all' && !setall){
-						this.setAll();
-						return this.refresh(true)
-					}
-					if(value.friendly_name == "Blog"){
-						AddPostsManual.forEach((postNr) => this.fetchPost( postNr, false ));
-					}
+					value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
 
 					value.c_id.forEach((el) => {
 						this.fetchCommunity( this.loadmorePage, el )
 					});
+
+					if(key == 'all' && !setall){
+						this.setAll();
+						return this.refresh( true )
+					}
 				}
 			}
 
@@ -697,7 +703,7 @@ class PostBuilder {
 		fetch(Settings.cdnurl + "/api/v3/post?id=" + postNr)
 		.then((response) => response.json())
 		.then((json) => this.processPost( json, onlyPost ))
-		.catch((error) => PostBuilder.displayError());
+		.catch((error) => PostBuilder.displayError( error ));
 	}
 
 	fetchCommunity( pageNumber, c_id ){
@@ -712,10 +718,11 @@ class PostBuilder {
 		fetch( postListAPI, { cache:"force-cache"})
 		.then((response) => response.json())
 		.then((json) => this.processCommunity( json ))
-		.catch((error) => PostBuilder.displayError());
+		.catch((error) => PostBuilder.displayError( error ));
 	}
 
-	static displayError(){
+	static displayError( error ){
+		//console.log(error);
 		let errorArticle = document.getElementById("error");
 		errorArticle.style.display = "block";
 		PageBuilder.showLoader( false );
