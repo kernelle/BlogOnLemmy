@@ -390,7 +390,8 @@ footer>*{
 	text-align: right;
 	float: left;
 	margin-top: 0px;
-	margin-bottom: 0;
+	margin-bottom: 0.2em;
+	margin-left: 1em;
 }
 p{
 	width: fit-content;

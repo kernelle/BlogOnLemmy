@@ -61,8 +61,6 @@ const About_me = [
 //	- Currate main page 
 let HidePostsOnce = [ 5750794 ]; // 14956
 
-let AddPostsManual = [ 5074952 ]
-
 /**********************************************************
 					Global Class
 ***********************************************************/
@@ -288,7 +286,7 @@ class PageBuilder {
 		let filterBtns = document.querySelectorAll("#filters>ul>li");
 		filterBtns.forEach((filterBtn) => {
 			filterBtn.classList = [ "unselected" ];
-		});		
+		});
 	}
 	
 	static buildFilters(){
@@ -424,7 +422,7 @@ class PageBuilder {
 		btnLoadmore.style.display = "block";
 		
 		if(loadmore){
-			btnLoadmore.children[0].children[0].innerText = "Load more";
+			btnLoadmore.children[0].children[0].innerText = "Load more posts!";
 			btnLoadmore.children[0].children[0].style.cursor = "pointer";
 		}
 		else{
@@ -572,7 +570,9 @@ class PostBuilder {
 			}
 		}
 
-		PageBuilder.showLoadmore( false );
+		if(!this.singletonLoadmore){
+			PageBuilder.showLoadmore( false );
+		}
 	}
 		
 	processCommunity( json ){
@@ -628,13 +628,12 @@ class PostBuilder {
 	
 	// Check if main list already contains post
 	checkPostExists( post ){
-		let found = false;
 		for(let i = 0;i<this.allPosts.length;i++){
 			if(this.allPosts[i].id === post.id){
-				found = true;
+				return true;
 			}
 		}
-		return found;
+		return false;
 	}
 	
 	// Title of post markup
@@ -748,11 +747,11 @@ class PostBuilder {
 			
 			let oldcontent = post.content;
 			post.content = this.postToReadMore( post.content );
-						
 			// Posts are shared or written, link = shared
-			let sharedBy = typeof post.url !== "undefined" ? "Shared by" : "By";
+			let forceBy = ( post.c_id != Community_filters['blog'].c_id[0] && post.id != Community_filters['blog'].manual_posts[0] )
+			let sharedBy = ( typeof post.url !== "undefined" && forceBy ) ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
-			let votetext = post.upvotes > 50 ? post.upvotes + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
+			let votetext = post.upvotes >= 20 ? post.upvotes + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
@@ -850,7 +849,7 @@ class PostBuilder {
 
 				container.classList.add("expand")
 				loadtext.classList.add("loadtext")
-				loadtext.innerText = "Loading Content..."
+				loadtext.innerText = "Loading Video..."
 				video.src = link;
 				video.autoplay = true;
 				video.loop = true;
@@ -866,7 +865,6 @@ class PostBuilder {
 	}
 
 	hasExpandedElement(parent) {
-
 		for (const el of parent.children) {
 			if(el.classList.toString() == "expand"){
 				return el;
