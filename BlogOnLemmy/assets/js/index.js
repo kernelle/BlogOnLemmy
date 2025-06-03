@@ -72,20 +72,22 @@ class Global {
 		this.savedDarkmode = false;
 		this.postNumber = -1;
 		// Check GET parameters
-		this.checkParameters();
+		this.cPar();
 		
 		// make pagetype related to the setting of a post number
 		this.pageType = this.postNumber === -1 ? "filters" : "post";
 		
 		//Build page
-		this.pageBuilder = new PageBuilder( this.pageType, this.postNumber, this.darkmode );
+		this.pBuild = new PageBuilder( this.pageType, this.postNumber, this.darkmode );
 	}
 	
 	// Check GET and Anchor parameters
-	checkParameters(){
-		let GETParameters = new URLSearchParams( window.location.search );
+	// checkParameters( )
+	cPar(){
+		// GETParameters
+		let getPar = new URLSearchParams( window.location.search );
 		
-		let darkmode = Global.getDarkmodeRebel();
+		let darkmode = Global.getDMR();
 		if(darkmode !== null){
 			let check = darkmode === "sith";
 			this.savedDarkmode = true;
@@ -93,14 +95,14 @@ class Global {
 			this.setDarkMode( check );
 		}
 		
-		if(GETParameters.has("dark")){
+		if(getPar.has("dark")){
 			this.savedDarkmode = true;
-			this.setDarkMode( GETParameters.get("dark") === "dark" );
+			this.setDarkMode( getPar.get("dark") === "dark" );
 		}
 		
 		// User wants a specific post
-		if(GETParameters.has("post")){
-			let postPar = GETParameters.get("post")
+		if(getPar.has("post")){
+			let postPar = getPar.get("post")
 			if(!isNaN(postPar)){
 				this.postNumber = postPar;
 			}
@@ -138,12 +140,12 @@ class Global {
 	}
 	
 	setFilter( filter ){
-		this.pageBuilder.postBuilder.filter( filter );
+		this.pBuild.postBuilder.filter( filter );
 	}
 
 	loadMore( ){
-		PageBuilder.checkAnchorToRemove();
-		this.pageBuilder.postBuilder.loadmoreContent();
+		PageBuilder.checkAtR();
+		this.pBuild.postBuilder.loadmoreContent();
 	}
 	
 	setDarkMode( dmPar ){
@@ -156,23 +158,26 @@ class Global {
 	}
 	
 	darkModeCanvas(){
-		if(typeof this.pageBuilder !== 'undefined'){
-			if(typeof this.pageBuilder.aboutme !== 'undefined'){
-				this.pageBuilder.aboutme.setDarkmode( this.darkmode );
+		if(typeof this.pBuild !== 'undefined'){
+			if(typeof this.pBuild.aboutme !== 'undefined'){
+				this.pBuild.aboutme.setDarkmode( this.darkmode );
 			}
 		}
 	}
 	
 	static showSavedDM( dm ){
-		document.querySelectorAll("#cookierebel li")[ !dm ? 0 : 1 ].classList = [ "selected"];
-		document.querySelectorAll("#cookierebel li")[ dm ? 0 : 1 ].classList = [ "unselected" ];
+		let rL = document.querySelectorAll("#cookierebel li");
+		rL[ !dm ? 0 : 1 ].classList = [ "selected"];
+		rL[ dm ? 0 : 1 ].classList = [ "unselected" ];
 	}
 
-	static setDarkmodeRebel( dm ) {
+	// setDarkmodeRebel()
+	static setDMR( dm ) {
 		localStorage.setItem( 'allegiance', dm ); 
 	}
 
-	static getDarkmodeRebel() {
+	// getDarkmodeRebel( )
+	static getDMR() {
 		return localStorage.getItem( 'allegiance' );
 	}
 	
@@ -225,9 +230,10 @@ class PageBuilder {
 		// Click events
 		document.getElementById("loadmore").addEventListener("click", this.clickLoadmore);
 		document.getElementById("darkmodeToggle").addEventListener("click", this.clickDarkmodetoggle);
-		document.getElementById("returnTop").addEventListener("click", this.clickScrollToTop);
-		document.getElementById("returnTop").children[0].addEventListener("click", this.clickScrollToTop);
-		document.getElementById("returnTop").children[0].addEventListener("touchstart", this.clickScrollToTop);
+		let rTop = document.getElementById("returnTop");
+		rTop.addEventListener("click", this.clickScrollToTop);
+		rTop.children[0].addEventListener("click", this.clickScrollToTop);
+		rTop.children[0].addEventListener("touchstart", this.clickScrollToTop);
 		document.querySelectorAll("#cookierebel li").forEach(( options ) => {
 			options.addEventListener( "click", this.clickCookieRebel );
 		});
@@ -268,7 +274,7 @@ class PageBuilder {
 		let id = e.srcElement.id;
 		let checkId = id === 'sith';
 		
-		Global.setDarkmodeRebel( id );
+		Global.setDMR( id );
 		main.setDarkMode( checkId );
 		Global.showSavedDM( checkId );
 	}
@@ -344,7 +350,8 @@ class PageBuilder {
 	}
 	
 	// Scroll back to desired place after new content is loaded
-	static checkAnchorAndScroll(){
+	// checkAnchorAndScroll()
+	static checkAaS(){
 		if(window.location.hash) {
 		  switch (window.location.hash){
 				case "#about":
@@ -358,7 +365,8 @@ class PageBuilder {
 	}
 	
 	// Remove only specific anchors
-	static checkAnchorToRemove(){
+	// checkAnchorToRemove()
+	static checkAtR(){
 		if(window.location.hash) {
 		  switch (window.location.hash){
 				case "#about":
@@ -369,24 +377,22 @@ class PageBuilder {
 	}
 	
 	static scrollToTop( removeAnchor ) {
-		// I like to experiment with the specific element this so ill leave it as is
-		let loadElement = document.documentElement;
-		let htmlPage = document.documentElement;
-		if( loadElement ){
+		let doc = document.documentElement;
+		if( doc ){
 			let header = document.getElementsByTagName('header')[0];
-			if(header.getBoundingClientRect().top <= htmlPage.scrollTop){
+			if(header.getBoundingClientRect().top <= doc.scrollTop){
 				// Asynchronous smooth scroll to top
 				const mutObserve = new MutationObserver(() => {
 					mutObserve.disconnect();
-					if(header.getBoundingClientRect().top <= htmlPage.scrollTop){
-						PageBuilder.smoothScrollTo( htmlPage );
+					if(header.getBoundingClientRect().top <= doc.scrollTop){
+						PageBuilder.smoothScrollTo( doc );
 					}
 				});
 				mutObserve.observe(document.body, { childList: true, subtree: true  });
-				PageBuilder.smoothScrollTo( htmlPage );
+				PageBuilder.smoothScrollTo( doc );
 			}
 		}
-		if(removeAnchor) PageBuilder.checkAnchorToRemove();
+		if(removeAnchor) PageBuilder.checkAtR();
 	} 
 	
 	static smoothScrollTo( toElement ){
@@ -418,17 +424,17 @@ class PageBuilder {
 	}
 	
 	static showLoadmore( loadmore ){
-		let btnLoadmore = document.getElementById("loadmore");
-		btnLoadmore.style.display = "block";
-		
+		let btnL = document.getElementById("loadmore");
+		btnL.style.display = "block";
+		btnL = btnL.children[0].children[0];
 		if(loadmore){
-			btnLoadmore.children[0].children[0].innerText = "Load more posts!";
-			btnLoadmore.children[0].children[0].style.cursor = "pointer";
+			btnL.innerText = "Load more posts!";
+			btnL.style.cursor = "pointer";
 		}
 		else{
-			btnLoadmore.children[0].children[0].innerText = "You've reached the end!";
+			btnL.innerText = "You've reached the end!";
 			// Thanks Sean!
-			btnLoadmore.children[0].children[0].style.cursor = "default";
+			btnL.style.cursor = "default";
 		}
 	}
 }
@@ -526,7 +532,7 @@ class PostBuilder {
 			const dateParsed = new Date( Date.parse( post.counts.published ) );
 			
 			// Parsed post content
-			let postParsed = {
+			let p = {
 				title: this.buildTitlePost(post),
 				c_id: post.community.id,
 				url: post.post.url,
@@ -534,20 +540,20 @@ class PostBuilder {
 				date: dateParsed.getDate() + '/' + (dateParsed.getMonth()+1) + '/' + dateParsed.getFullYear(),
 				dateObject: dateParsed,
 				id: post.counts.post_id,
-				upvotes: post.counts.upvotes,
+				up: post.counts.upvotes,
 				lemmy_url: post.post.ap_id
 			};
 
 			// Parse crosspost upvotes
 			crossposts.forEach((xpost) => {
-				if(postParsed.upvotes < xpost.counts.upvotes){
-					postParsed.upvotes = xpost.counts.upvotes;
-					postParsed.lemmy_url = xpost.post.ap_id;
+				if(p.up < xpost.counts.upvotes){
+					p.up = xpost.counts.upvotes;
+					p.lemmy_url = xpost.post.ap_id;
 				}
 
 			});
 
-			return postParsed; 
+			return p;
 		}
 		return false;
 	}
@@ -652,7 +658,7 @@ class PostBuilder {
 			title += `<a href="${post.post.url}"><sub>${hostnamePost}</sub></a>`;
 
 			if( post.post.url.split('.').pop() == 'mp4' ){
-				title += '<svg class="videoExpand" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-film"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
+				title += '<svg class="videoExpand" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
 			}
 		}
 		
@@ -751,7 +757,7 @@ class PostBuilder {
 			let forceBy = ( post.c_id != Community_filters['blog'].c_id[0] && post.id != Community_filters['blog'].manual_posts[0] )
 			let sharedBy = ( typeof post.url !== "undefined" && forceBy ) ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
-			let votetext = post.upvotes >= 20 ? post.upvotes + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
+			let votetext = post.up >= 20 ? post.up + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
@@ -837,34 +843,34 @@ class PostBuilder {
 
 	expandOption(e){
 		if(e.target.nodeName != 'svg'){
-			return this.expandOption( { 'target': e.target.parentNode } )
+			return this.expandOption( { 'target': e.target.parentNode } );
 		}else{
-			let expandedElement = this.hasExpandedElement(e.target.parentNode.parentNode)
-			if( !expandedElement){
-				let link = e.target.parentNode.children[0].href
+			let exEl = this.hasExpanded(e.target.parentNode.parentNode);
+			if( !exEl){
+				let link = e.target.parentNode.children[0].href;
 
 				let container = document.createElement('div');
 				let loadtext = document.createElement('span');
 				let video = document.createElement('video');
 
-				container.classList.add("expand")
-				loadtext.classList.add("loadtext")
-				loadtext.innerText = "Loading Video..."
+				container.classList.add("expand");
+				loadtext.classList.add("loadtext");
+				loadtext.innerText = "Loading Video...";
 				video.src = link;
 				video.autoplay = true;
 				video.loop = true;
 
-				container.appendChild( loadtext )
-				container.appendChild( video )
+				container.appendChild( loadtext );
+				container.appendChild( video );
 
-				e.target.parentNode.after( container )
-			}else(
-				expandedElement.remove()
-			)
+				e.target.parentNode.after( container );
+			}else{
+				exEl.remove();
+			}
 		}
 	}
 
-	hasExpandedElement(parent) {
+	hasExpanded(parent) {
 		for (const el of parent.children) {
 			if(el.classList.toString() == "expand"){
 				return el;
@@ -940,7 +946,7 @@ class DrawAboutMe {
 	}
 	
 	firstSpark(){
-		this.mainSpark = new FireElementCanvas( 
+		this.mSpark = new FireElementCanvas(
 							"Click me!",
 							this.getCenter(), 
 							this.getCenter(),
@@ -952,7 +958,7 @@ class DrawAboutMe {
 	newFire( type, lifetime=-1 ){
 		let title = About_me[ this.selectedSpark ];
 		//let source = this.getCenter();
-		 let source = this.mainSpark.getPos(); 					 
+		 let source = this.mSpark.getPos();
 		this.selectedSpark++;
 		if( this.selectedSpark >= About_me.length ) this.selectedSpark = 0;
 		
@@ -983,7 +989,7 @@ class DrawAboutMe {
 		
 		window.addEventListener('resize', () => {
 			this.init();
-			this.mainSpark.updateStill(this.htmlWidth/2, this.htmlHeight/2);
+			this.mSpark.updateStill(this.htmlWidth/2, this.htmlHeight/2);
 			this.drawSparks();
 		});
 		
@@ -1067,14 +1073,14 @@ class DrawAboutMe {
 		let lifetime = -1;
 		
 		if(this.level === 1){
-			this.mainSpark.enableCycle();
+			this.mSpark.enableCycle();
 			this.level++;
 		}
 		
 		if(this.level === 3){
 			let bounceTarget = this.calculateNextTarget();
-			this.mainSpark.updateTarget( bounceTarget.x, bounceTarget.y );
-			this.mainSpark.type = "bounce";
+			this.mSpark.updateTarget( bounceTarget.x, bounceTarget.y );
+			this.mSpark.type = "bounce";
 			this.level++;
 		}
 		
@@ -1088,8 +1094,8 @@ class DrawAboutMe {
 		if(this.level >= 10){
 			//Minus 2, 2 skipped levels
 			let calcClicks = ( ( this.level - 2) * About_me.length ) + this.clickedAmount;
-			this.mainSpark.updateText( calcClicks );
-			if(calcClicks >= 200) this.mainSpark.s();
+			this.mSpark.updateText( calcClicks );
+			if(calcClicks >= 200) this.mSpark.s();
 		}
 				
 		if( this.clickedAmount === About_me.length ){
@@ -1121,7 +1127,7 @@ class DrawAboutMe {
 	}
 	
 	updateSparks(){
-		this.mainSpark.next();
+		this.mSpark.next();
 		
 		this.sparks.forEach(( spark ) => {
 			spark.next();
@@ -1135,7 +1141,7 @@ class DrawAboutMe {
 			spark.draw();
 		});
 		
-		this.mainSpark.draw();
+		this.mSpark.draw();
 	}
 	
 	destroySparks(){
@@ -1148,8 +1154,8 @@ class DrawAboutMe {
 		
 		//Stop the engine when no sparks are flying
 		if(this.sparks.length === 0 
-		&& this.mainSpark.type === 'still'
-		&& !this.mainSpark.colour.enable){
+		&& this.mSpark.type === 'still'
+		&& !this.mSpark.colour.enable){
 			this.running = false;
 		}
 	}
@@ -1253,7 +1259,7 @@ class FireElementCanvas {
 	
 	//offsetWidth
 	compare(){
-		//Optimization, only check every second (60 frames)
+		//Optimization, only check every second-ish
 		if(this.lastcheckago === 144){
 			let cvWidth = this.canvas.width;
 			let cvHeight = this.canvas.height;
