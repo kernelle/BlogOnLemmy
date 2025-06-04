@@ -5,7 +5,7 @@ const Settings = {
 	firstname: "Martijn",
 	lemmy_instance: "https://0d.gs",
 	// I use seperate one, if you don't use this then make it the same as lemmy_instance
-	cdnurl: "https://0d.gs"
+	cdnurl: "https://cdn.0d.gs"
 }
 
 // Lemmy's API only supports community_id on user profiles for now
