@@ -5,7 +5,7 @@ const Settings = {
 	firstname: "Martijn",
 	lemmy_instance: "https://0d.gs",
 	// I use seperate one, if you don't use this then make it the same as lemmy_instance
-	cdnurl: "https://cdn.0d.gs"
+	cdnurl: "https://0d.gs"
 }
 
 // Lemmy's API only supports community_id on user profiles for now
@@ -332,13 +332,19 @@ class PageBuilder {
 	static floatNav( enable, navbar, offset ){
 		if(enable){
 			if(!this.snapNav){
-				navbar.children[1].id = "floatnav";
-				let dynamicOffset = 16;
-				if(document.documentElement.offsetWidth > 700){
-					dynamicOffset = dynamicOffset*2;
+
+				let tH = navbar.children[1].offsetHeight ;
+				let offsetX = 0;
+				if(document.documentElement.offsetWidth < 700){
+					//let tH1 = tH*2 + (tH/2);
+					offsetX = tH + 16;
+				}else{
+					offsetX = tH * 2 - 3 ;
 				}
-				let offset = navbar.children[1].offsetHeight + dynamicOffset ;
-				navbar.style.paddingBottom = offset + "px";
+				//text-height + margin (1em) + seletedmargin(0.5em)
+
+				navbar.style.paddingBottom = offsetX + "px";
+				navbar.children[1].id = "floatnav";
 			}
 			this.snapNav = true;
 			
@@ -407,10 +413,10 @@ class PageBuilder {
 	static showTopButton() {
 		let btnScrollTop = document.getElementById("returnTop");
 		let bodyScroll = document.body.scrollTop;
-		let docScroll = document.documentElement.scrollTop;
+		//let docScroll = document.documentElement.scrollTop;
 		
 		let navbar = document.getElementById("filters");
-		let offsetNav = navbar.children[0].offsetTop +2;
+		let offsetNav = navbar.children[0].offsetTop + navbar.children[0].offsetHeight;
 		let enable = document.body.scrollTop > offsetNav || document.documentElement.scrollTop > offsetNav;
 		
 		btnScrollTop.style.display = enable ? "flex" : "none";
