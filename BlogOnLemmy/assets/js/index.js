@@ -80,7 +80,7 @@ const About_me = [
 
 // Hide these post only once when the main page loads
 //	- Currate main page
-let HidePostsOnce = [ 14956, 5750794, 30343141 ]; //
+let HidePostsOnce = [ 5750794, 30941389 ]; //
 
 /**********************************************************
 					Global Class
@@ -151,8 +151,8 @@ class Global {
 	}
 
 	static setMirrorForKey( status, keyType ){
-		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect] )) {
-			Community_filters[Settings.mSelect][ keyType ].enabled = status;
+		for (let i = 0; i < Community_filters.length;i++ ) {
+			Community_filters[i][ keyType ].enabled = status;
 		}
 	}
 	
