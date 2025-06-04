@@ -192,6 +192,17 @@ class Global {
 			}
 		}
 	}
+
+	showCopyMsg( ){
+		if(main.pBuild.lastCopied+2 <= ( new Date()/1000 ) ){
+			let dEl = document.getElementById('ttText');
+			dEl.style.opacity = 0;
+			setTimeout(function(){
+				dEl.style.display = 'none'
+			}, 500);
+
+		}
+	}
 	
 	static showSavedDM( dm ){
 		let rL = document.querySelectorAll("#cookierebel li");
@@ -233,7 +244,9 @@ class PageBuilder {
 		this.offsetNav = false;
 		
 		this.pageload = this.pageload.bind(this);
+		this.handleHrefClick = this.handleHrefClick.bind(this);
 		this.darkmode = darkmode;
+		this.lastCopied = 0;
 		
 		document.addEventListener("DOMContentLoaded", this.pageload);
 	}
@@ -268,8 +281,12 @@ class PageBuilder {
 		document.querySelectorAll("#filters>ul>li").forEach(( filterBtn ) => {
 			filterBtn.addEventListener( "click", PageBuilder.clickFilter );
 		});	
-		document.querySelectorAll('a').forEach(( aAnchors ) => {
-			aAnchors.addEventListener("click", function(e) {
+		document.querySelectorAll('a').forEach(( aAnchors ) => this.handleHrefClick( aAnchors) );
+	}
+
+	handleHrefClick( aAnchors ){
+		aAnchors.addEventListener("click", function(e) {
+			if(typeof e.target.hash !== 'undefined'){
 				if(e.target.hash[0] === "#"){
 					e.preventDefault();
 					document.querySelector(this.getAttribute("href")).scrollIntoView({
@@ -277,10 +294,44 @@ class PageBuilder {
 					});
 					window.history.replaceState('', '', '/' + e.target.hash);
 				}
-			});
+			}else if( this.classList.contains('cText') ){
+				e.preventDefault();
+
+				let cEl = document.getElementById('ttText');
+				cEl.innerText = this.getAttribute("cTitle") + ' Link Copied!';
+				cEl.style.width = (cEl.innerText.length-3) + 'em';
+				cEl.style.display = 'block';
+				cEl.style.opacity = 1;
+				main.pBuild.lastCopied = new Date() /1000;
+
+				setTimeout(main.showCopyMsg, 2000);
+
+				//navigator.clipboard.writeText(this.getAttribute("href"));
+				PageBuilder.copyToClipboard(this.getAttribute("href"));
+				//console.log()
+			}
+
 		});
 	}
-	
+
+	static copyToClipboard(text) {
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(text);
+		} else {
+			// Older browsers
+			let tA = document.createElement("textarea");
+			tA.value = text;
+			document.body.appendChild(tA);
+			tA.select();
+			try {
+				document.execCommand("copy");
+			} catch (err) {
+
+			}
+			document.body.removeChild(tA);
+		}
+	}
+
 	pageload( e ){
 		const globalDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		

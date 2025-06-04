@@ -25,7 +25,7 @@ body{
 }
 
 .darkmode .unselected{
-	border: solid 3px #fff9f95e !important;
+	border: solid 0.2em #fff9f95e !important;
 }
 
 .darkmode h1{
@@ -193,10 +193,10 @@ article{
 	padding: 0 1rem;
 	margin-bottom: 1.5em;
 	line-height: 1.2;
-	word-spacing: -3px;
+	word-spacing: -0.2em;
 	letter-spacing: -0.1px;
-	border: solid 3px #041B78;
-	box-shadow: 5px 5px 2px #12008c;
+	border: solid 0.2em #041B78;
+	box-shadow: 5px 5px 0.15em #12008c;
 }
 
 .border{
@@ -272,8 +272,8 @@ blockquote + br + br{
 }
 
 .boxy li{
-	border-radius: 25px;
-	border: solid 3px #0000000f;
+	border-radius: 1.2em;
+	border: solid 0.2em #0000000f;
 	padding-left: 1em;
 	padding-right: 1em;
 	cursor: pointer;
@@ -309,7 +309,7 @@ blockquote + br + br{
 }
 
 .selected{
-	border: solid 3px #041B78 !important;
+	border: solid 0.2em #041B78 !important;
 }
 
 .disabled{
@@ -324,7 +324,7 @@ blockquote + br + br{
 }
 
 footer{
-	border-top: 3px solid #041B78;
+	border-top: 0.2em solid #041B78;
 	width: 83%;
 	margin: auto;
 	padding-top: 0.4em;
@@ -429,3 +429,22 @@ video{
 	text-align: center;
 	padding-bottom:.5em;
 }
+
+#ttText {
+	background-color: #041B78;
+	color: #fff;
+	display: none;
+	width: 14em;
+	text-align: center;
+	padding: 0.5em 0;
+	border-radius: 1.2em;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	right: 0;
+	margin: auto;
+	transition: opacity 0.25s;
+	opacity: 1;
+	top: 4em;
+}
+
