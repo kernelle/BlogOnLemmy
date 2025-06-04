@@ -1,43 +1,64 @@
 "use strict";
 
-const Settings = {
+let Settings = {
 	username: "kernelle",
 	firstname: "Martijn",
-	lemmy_instance: "https://0d.gs",
-	// I use seperate one, if you don't use this then make it the same as lemmy_instance
-	cdnurl: "https://cdn.0d.gs"
+	lemmy_instance: "0d.gs",
+	// I use a CDN for the actual API requests
+	//    if you don't use this then make it the same as lemmy_instance
+	mirror: [ "cdn.0d.gs", "lemmy.ml" ],
+	mSelect: 0
 }
 
 // Lemmy's API only supports community_id on user profiles for now
-let Community_filters = {
+let Community_filters = [ {
 	"blog": {
 		enabled: true,
 		c_id: [ 154 ],
 		manual_posts: [ 5074952 ],
 		//c_name: [ "self@0d.gs" ],
-		friendly_name: "Blog" 
+		friendly_name: "Blog"
 	},
 	"linkdumps": {
 		enabled: false,
 		c_id: [ 59105 ],
-		manual_posts: [ ],
 		//c_name: [ "linkdumps@0d.gs" ],
 		friendly_name: "LinkDumps" 
 	},
 	"news": {
 		enabled: false,
 		c_id: [ 884, 58587 ],
-		manual_posts: [ ],
 		//c_name: [ "belgium@0d.gs" ],
 		friendly_name: "News" 
 	},
 	"all": {
 		enabled: false,
 		c_id: [ 2547 ],
-		manual_posts: [ ],
 		friendly_name: "All"
 	}
-};
+},{
+	"blog": {
+		enabled: true,
+		c_id: [ 331226 ],
+		manual_posts: [ 30343141 ],
+		friendly_name: "Blog",
+	},
+	"linkdumps": {
+		enabled: false,
+		c_id: [ 974974 ],
+		friendly_name: "LinkDumps"
+	},
+	"news": {
+		enabled: false,
+		c_id: [351392, 664715],
+		friendly_name: "News",
+	},
+	"all": {
+		enabled: false,
+		c_id: [85477],
+		friendly_name: "All"
+	}
+}];
 
 const About_me = [
 	"Electronics–ICT",
@@ -58,8 +79,8 @@ const About_me = [
 ];
 
 // Hide these post only once when the main page loads
-//	- Currate main page 
-let HidePostsOnce = [ 5750794 ]; // 14956
+//	- Currate main page
+let HidePostsOnce = [ 14956, 5750794, 30343141 ]; //
 
 /**********************************************************
 					Global Class
@@ -111,10 +132,11 @@ class Global {
 		// Check hash for filter
 		if(window.location.hash) {
 			let hash = window.location.hash;
-			for (const [key, value] of Object.entries(Community_filters)) {
+			for (const [key, value] of Object.entries(Community_filters[Settings.mSelect] )) {
 				if( '#' + key === hash.toLowerCase() ){
 					Global.filterClear();
-					Community_filters[ key ].enabled = true;
+
+					Global.setMirrorForKey( true, key )
 					if(key == 'all'){
 						this.pageType = key;
 					}
@@ -126,6 +148,12 @@ class Global {
 				}
 			}
 		} 
+	}
+
+	static setMirrorForKey( status, keyType ){
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect] )) {
+			Community_filters[Settings.mSelect][ keyType ].enabled = status;
+		}
 	}
 	
 	/*		 
@@ -182,8 +210,8 @@ class Global {
 	}
 	
 	static filterClear(){
-		for (const [key, value] of Object.entries(Community_filters)) {
-			Community_filters[key].enabled = false;
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+			Global.setMirrorForKey(false, key);
 		}
 	}
 }
@@ -298,7 +326,7 @@ class PageBuilder {
 	static buildFilters(){
 		let filterHTML = "";
 		
-		for (const [key, value] of Object.entries(Community_filters)) {
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
 			let selectedID = value.enabled ? "selected" : "unselected";
 			filterHTML += `<li tabindex="0" class="${ selectedID }">${ value.friendly_name }</li>`;
 			if(value.enabled){
@@ -484,7 +512,7 @@ class PostBuilder {
 		this.pagetype = "filters";
 		
 		//Set filter
-		Community_filters[ type ].enabled = true;
+		Global.setMirrorForKey(true, type);
 		
 		this.refresh();
 	}
@@ -532,7 +560,7 @@ class PostBuilder {
 	
 	// API adaptor for post object
 	parsePost( post, crossposts=[] ){
-		let fullactorID = Settings.lemmy_instance + '/u/' + Settings.username;
+		let fullactorID = "https://"+Settings.lemmy_instance + '/u/' + Settings.username;
 		
 		if(post.creator.actor_id === fullactorID && post.counts.score >= -3 ){
 			const dateParsed = new Date( Date.parse( post.counts.published ) );
@@ -672,8 +700,8 @@ class PostBuilder {
 	}
 
 	setAll( ){
-		for (const [key, value] of Object.entries(Community_filters)) {
-			Community_filters[key].enabled = true;
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+			Global.setMirrorForKey(true, key);
 		}
 
 
@@ -688,9 +716,12 @@ class PostBuilder {
 		PageBuilder.showLoader( true );
 
 		if(this.pagetype === "filters"){
-			for (const [key, value] of Object.entries(Community_filters)) {
-				if(value.enabled || setall){
-					value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
+			let mselect = Settings.mSelect;
+			for ( const [key, value] of Object.entries( Community_filters[Settings.mSelect] ) ) {
+				if(( value.enabled || setall ) && mselect == Settings.mSelect){
+					if(typeof value.manual_posts !== 'undefined'){
+						value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
+					}
 
 					value.c_id.forEach((el) => {
 						this.fetchCommunity( this.loadmorePage, el )
@@ -711,29 +742,43 @@ class PostBuilder {
 	}
 
 	fetchPost( postNr, onlyPost ){
-		fetch(Settings.cdnurl + "/api/v3/post?id=" + postNr)
+		let mselect = Settings.mSelect;
+		fetch("https://" + Settings.mirror[Settings.mSelect] + "/api/v3/post?id=" + postNr)
 		.then((response) => response.json())
 		.then((json) => this.processPost( json, onlyPost ))
-		.catch((error) => PostBuilder.displayError( error ));
+		.catch((error) => this.handleErrorCommunity( mselect ));
 	}
 
 	fetchCommunity( pageNumber, c_id ){
 		let addPageNumber = pageNumber > 1 ? "&page=" + pageNumber : "";
-
-		const postListAPI = Settings.cdnurl
+		let mselect = Settings.mSelect;
+		const postListAPI = "https://" + Settings.mirror[Settings.mSelect]
 			+ "/api/v3/user?username="
-			+ Settings.username
+			+ Settings.username + "@" + Settings.lemmy_instance
 			+ addPageNumber
 			+"&sort=New&community_id="
 			+ c_id;
 		fetch( postListAPI, { cache:"force-cache"})
 		.then((response) => response.json())
 		.then((json) => this.processCommunity( json ))
-		.catch((error) => PostBuilder.displayError( error ));
+		.catch((error) => this.handleErrorCommunity( mselect ));
 	}
 
-	static displayError( error ){
-		//console.log(error);
+	//mSel keeps track of the selected mirror between requests
+	handleErrorCommunity( mSel ){
+		//ignore error if mSelect has been changed between Mirrors
+		if(mSel == Settings.mSelect){
+			if(Settings.mSelect < Settings.mirror.length){
+				Settings.mSelect++;
+				//this.resetFilters();
+				this.refresh();
+			}else{
+				PostBuilder.displayError()
+			}
+		}
+	}
+
+	static displayError(){
 		let errorArticle = document.getElementById("error");
 		errorArticle.style.display = "block";
 		PageBuilder.showLoader( false );
@@ -760,14 +805,14 @@ class PostBuilder {
 			let oldcontent = post.content;
 			post.content = this.postToReadMore( post.content );
 			// Posts are shared or written, link = shared
-			let forceBy = ( post.c_id != Community_filters['blog'].c_id[0] && post.id != Community_filters['blog'].manual_posts[0] )
+			let forceBy = ( post.c_id != Community_filters[Settings.mSelect]['blog'].c_id[0] && post.id != Community_filters[Settings.mSelect]['blog'].manual_posts[0] )
 			let sharedBy = ( typeof post.url !== "undefined" && forceBy ) ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
 			let votetext = post.up >= 20 ? post.up + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
-			let verseReference = "https://lemmyverse.link/" + post.lemmy_url.substring(8);
+			let verseReference = "https://lemmyverse.link/" + Settings.lemmy_instance + "/post/"+  post.id;
 			let articleTemplate = `<article>
 				<div>
 					<header>
