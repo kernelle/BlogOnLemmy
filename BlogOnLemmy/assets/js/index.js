@@ -1,20 +1,23 @@
 "use strict";
 
-const Settings = {
+let Settings = {
 	username: "kernelle",
 	firstname: "Martijn",
-	lemmy_instance: "https://0d.gs",
-	// I use seperate one, if you don't use this then make it the same as lemmy_instance
-	cdnurl: "https://cdn.0d.gs"
+	lemmy_instance: "0d.gs",
+	// I use a CDN for the actual API requests
+	//    if you don't use this then make it the same as lemmy_instance
+	mirror: [ "cdn.0d.gs", "lemmy.ml" ],
+	mSelect: 0
 }
 
 // Lemmy's API only supports community_id on user profiles for now
-let Community_filters = {
+let Community_filters = [ {
 	"blog": {
 		enabled: true,
 		c_id: [ 154 ],
 		//c_name: [ "self@0d.gs" ],
-		friendly_name: "Blog" 
+		manual_posts: [ 5074952 ],
+		friendly_name: "Blog"
 	},
 	"linkdumps": {
 		enabled: true,
@@ -27,8 +30,34 @@ let Community_filters = {
 		c_id: [ 884 ],
 		//c_name: [ "belgium@0d.gs" ],
 		friendly_name: "News" 
-	}	
-};
+	}
+},
+{
+	"blog": {
+		enabled: true,
+		c_id: [ 331226 ],
+		manual_posts: [ 30343141 ],
+		friendly_name: "Blog",
+	},
+	"linkdumps": {
+		enabled: false,
+		c_id: [ 974974 ],
+		manual_posts: [],
+		friendly_name: "LinkDumps"
+	},
+	"news": {
+		enabled: false,
+		c_id: [351392, 664715],
+		manual_posts: [],
+		friendly_name: "News"
+	},
+	"all": {
+		enabled: false,
+		c_id: [85477],
+		manual_posts: [],
+		friendly_name: "All"
+	}
+}];
 
 const About_me = [
 	"Electronics–ICT",
@@ -49,10 +78,8 @@ const About_me = [
 ];
 
 // Hide these post only once when the main page loads
-//	- Currate main page 
-let HidePostsOnce = [ 14956 ]; //
-
-let AddPostsManual = [ 5074952 ]
+//	- Currate main page
+let HidePostsOnce = [ 14956, 5750794, 30343141 ]; //
 
 /**********************************************************
 					Global Class
@@ -102,10 +129,10 @@ class Global {
 		// Check hash for filter
 		if(window.location.hash) {
 			let hash = window.location.hash;
-			for (const [key, value] of Object.entries(Community_filters)) {
+			for (const [key, value] of Object.entries(Community_filters[Settings.mSelect] )) {
 				if( '#' + key === hash.toLowerCase() ){
 					Global.filterClear();
-					Community_filters[ key ].enabled = true;
+					Community_filters[Settings.mSelect][ key ].enabled = true;
 					
 					// Do not hide posts on anchor					
 					HidePostsOnce = [ ];
@@ -167,8 +194,8 @@ class Global {
 	}
 	
 	static filterClear(){
-		for (const [key, value] of Object.entries(Community_filters)) {
-			Community_filters[key].enabled = false;
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+			Community_filters[Settings.mSelect][key].enabled = false;
 		}
 	}
 }
@@ -282,7 +309,7 @@ class PageBuilder {
 	static buildFilters(){
 		let filterHTML = "";
 		
-		for (const [key, value] of Object.entries(Community_filters)) {
+		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
 			let selectedID = value.enabled ? "selected" : "unselected";
 			filterHTML += `<li tabindex="0" class="${ selectedID }">${ value.friendly_name }</li>`;
 		}
@@ -454,7 +481,7 @@ class PostBuilder {
 		this.pagetype = "filters";
 		
 		//Set filter
-		Community_filters[ type ].enabled = true;
+		Community_filters[Settings.mSelect][ type ].enabled = true;
 		
 		this.refresh();
 	}
@@ -498,7 +525,7 @@ class PostBuilder {
 	
 	// API adaptor for post object
 	parsePost( post ){
-		let fullactorID = Settings.lemmy_instance + '/u/' + Settings.username;
+		let fullactorID = "https://"+Settings.lemmy_instance + '/u/' + Settings.username;
 		
 		if(post.creator.actor_id === fullactorID && post.counts.score >= 1 ){
 			const dateParsed = new Date( Date.parse( post.counts.published ) );
@@ -630,10 +657,10 @@ class PostBuilder {
 		PostBuilder.hideError();
 		PageBuilder.showLoader( true );
 		if(this.pagetype === "filters"){
-			for (const [key, value] of Object.entries(Community_filters)) {
+			for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
 				if(value.enabled){
-					if(value.friendly_name == "Blog"){
-						AddPostsManual.forEach((postNr) => this.fetchPost( postNr, false ));
+					if(typeof value.manual_posts !== 'undefined'){
+						value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
 					}
 
 					value.c_id.forEach((el) => {
@@ -650,7 +677,7 @@ class PostBuilder {
 	}
 
 	fetchPost( postNr, onlyPost ){
-		fetch(Settings.cdnurl + "/api/v3/post?id=" + postNr)
+		fetch("https://" + Settings.mirror[Settings.mSelect] + "/api/v3/post?id=" + postNr)
 		.then((response) => response.json())
 		.then((json) => this.processPost( json, onlyPost ))
 		.catch((error) => PostBuilder.displayError());
@@ -659,9 +686,9 @@ class PostBuilder {
 	fetchCommunity( pageNumber, c_id ){
 		let addPageNumber = pageNumber > 1 ? "&page=" + pageNumber : "";
 
-		const postListAPI = Settings.cdnurl
+		const postListAPI = "https://" + Settings.mirror[Settings.mSelect]
 			+ "/api/v3/user?username="
-			+ Settings.username
+			+ Settings.username + "@" + Settings.lemmy_instance
 			+ addPageNumber
 			+"&sort=New&community_id="
 			+ c_id;
@@ -672,7 +699,13 @@ class PostBuilder {
 	}
 
 	handleErrorCommunity(){
-		PostBuilder.displayError()
+		if(Settings.mSelect < Settings.mirror.length){
+			Settings.mSelect++;
+			this.refresh();
+
+		}else{
+			PostBuilder.displayError()
+		}
 	}
 
 	static displayError(){
@@ -709,7 +742,7 @@ class PostBuilder {
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
-			let verseReference = "https://lemmyverse.link/" + Settings.lemmy_instance.substring(8) + "/post/"+  post.id;
+			let verseReference = "https://lemmyverse.link/" + Settings.lemmy_instance + "/post/"+  post.id;
 			let articleTemplate = `<article>
 				<div>
 					<header>
