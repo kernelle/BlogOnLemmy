@@ -31,23 +31,29 @@ $ ./build.sh
 ```
 
 ## Features
+- HTML, CSS and ES6 JavaScript. That's it.
 - Linked to a user using Lemmy’s API, no authentication
 - Host content on any instance
 - Category filters: Set one or more community as the categories
-- Easy to adapt to your profile
+- Easy to adapt to any profile
 - One page constraint
-- Anchor navigation and permalinks
+- Anchor navigation
+- Permalinks
 - Responsive
 - Dark / Light mode
 - No cookies or tracking
 - Interactive “about me”
 - No backend: serving a single lightweight page that can be hosted anywhere, including GitHub
-- HTML, CSS and ES6 JavaScript. That's it.
-- Error page with link to another instance in case your main is down or unreachable
-
-## Latest News
+- Error page if all servers are down
 - Combining & Minification using a node script
-- bash file to build the site and generate brotli compressed files
+- Bash file to build the site into one file and compress with brotli
+
+## Latest Features
+- 'All'-button enables all filters (I'll also add posts which don't fit other filters here as well)
+- Expand a video embedded in the site
+- Navbar icons now copy the links to clipboard instead of opening (Link remains so middle/right click still behave as a link)
+- Share button next to permalinks also copy to clipboard
+- Mirrors: Set multiple Lemmy instances for the API as redundancy
 
 #### Known Issues
 - Possible compatibility issues with older iOS devices. Let me know if you encounter an issue!

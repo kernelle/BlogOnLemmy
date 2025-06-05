@@ -80,7 +80,7 @@ const About_me = [
 
 // Hide these post only once when the main page loads
 //	- Currate main page
-let HidePostsOnce = [ 5750794, 30941389 ]; //
+let HidePostsOnce = [ 5750794 ]; //30941389
 
 /**********************************************************
 					Global Class
@@ -199,8 +199,7 @@ class Global {
 			dEl.style.opacity = 0;
 			setTimeout(function(){
 				dEl.style.display = 'none'
-			}, 500);
-
+			}, 300);
 		}
 	}
 	
@@ -244,7 +243,7 @@ class PageBuilder {
 		this.offsetNav = false;
 		
 		this.pageload = this.pageload.bind(this);
-		this.handleHrefClick = this.handleHrefClick.bind(this);
+		//this.handleHrefClick = this.handleHrefClick.bind(this);
 		this.darkmode = darkmode;
 		this.lastCopied = 0;
 		
@@ -281,37 +280,36 @@ class PageBuilder {
 		document.querySelectorAll("#filters>ul>li").forEach(( filterBtn ) => {
 			filterBtn.addEventListener( "click", PageBuilder.clickFilter );
 		});	
-		document.querySelectorAll('a').forEach(( aAnchors ) => this.handleHrefClick( aAnchors) );
+		document.querySelectorAll('a').forEach(( aAnchors ) => aAnchors.addEventListener("click", PageBuilder.handleHrefClick) );
 	}
 
-	handleHrefClick( aAnchors ){
-		aAnchors.addEventListener("click", function(e) {
-			if(typeof e.target.hash !== 'undefined'){
-				if(e.target.hash[0] === "#"){
-					e.preventDefault();
-					document.querySelector(this.getAttribute("href")).scrollIntoView({
-						behavior: "smooth"
-					});
-					window.history.replaceState('', '', '/' + e.target.hash);
-				}
-			}else if( this.classList.contains('cText') ){
+	static handleHrefClick( e ){
+		//e.preventDefault();
+		//console.log(e, this)
+		if(typeof e.target.hash !== 'undefined'){
+			if(e.target.hash[0] === "#"){
 				e.preventDefault();
-
-				let cEl = document.getElementById('ttText');
-				cEl.innerText = this.getAttribute("cTitle") + ' Link Copied!';
-				cEl.style.width = (cEl.innerText.length-3) + 'em';
-				cEl.style.display = 'block';
-				cEl.style.opacity = 1;
-				main.pBuild.lastCopied = new Date() /1000;
-
-				setTimeout(main.showCopyMsg, 2000);
-
-				//navigator.clipboard.writeText(this.getAttribute("href"));
-				PageBuilder.copyToClipboard(this.getAttribute("href"));
-				//console.log()
+				document.querySelector(this.getAttribute("href")).scrollIntoView({
+					behavior: "smooth"
+				});
+				window.history.replaceState('', '', '/' + e.target.hash);
 			}
+		}
+		if( this.classList.contains('cText') ){
+			e.preventDefault();
 
-		});
+			let cEl = document.getElementById('ttText');
+			cEl.innerText = this.getAttribute("cTitle") + ' Link Copied!';
+			cEl.style.width = (cEl.innerText.length-3) + 'em';
+			cEl.style.display = 'block';
+			cEl.style.opacity = 1;
+
+			main.pBuild.lastCopied = new Date() /1000;
+			setTimeout(main.showCopyMsg, 2000);
+
+			PageBuilder.copyToClipboard(this.getAttribute("href"));
+		}
+
 	}
 
 	static copyToClipboard(text) {
@@ -871,7 +869,7 @@ class PostBuilder {
 					   
 						<div>
 						  <span class="fade">
-							<b> ${sharedBy} ${Settings.firstname}, ${post.date}</b><i> <a class="onepagelink" href="${permalink}">permalink</a></i>
+							<b> ${sharedBy} ${Settings.firstname}, ${post.date}</b><i> <a class="onepagelink" href="${permalink}">permalink</a><a class="cText" cTitle="Share" href="${location.origin}${permalink}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sh"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></a></i>
 						  </span>
 						</div>
 					</header>
@@ -884,7 +882,7 @@ class PostBuilder {
 					</div>
 				</div>
 				
-			</article>`;
+			</article>`;//🔗
 			resultBuilder = `${resultBuilder} ${articleTemplate}`;
 		}
 		
@@ -892,6 +890,11 @@ class PostBuilder {
 			
 		document.querySelectorAll(`.community${c_id} .onepagelink`).forEach(( pm ) => {
 			pm.addEventListener( "click", this.overridePermalink );
+		});
+
+		document.querySelectorAll(`a`).forEach(( pm ) => {
+			pm.removeEventListener( "click", PageBuilder.handleHrefClick );
+			pm.addEventListener( "click", PageBuilder.handleHrefClick );
 		});
 
 		document.querySelectorAll(`.videoExpand`).forEach(( vE ) => {
