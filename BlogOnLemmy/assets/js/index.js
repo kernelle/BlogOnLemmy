@@ -3,6 +3,7 @@
 let Settings = {
 	username: "kernelle",
 	firstname: "Martijn",
+	title: './Martijn.sh > ',
 	lemmy_instance: "0d.gs",
 	// I use a CDN for the actual API requests
 	//    if you don't use this then make it the same as lemmy_instance
@@ -181,13 +182,14 @@ class Global {
 		this.darkModeCanvas();
 		
 		document.documentElement.classList = this.darkmode ? [ "darkmode" ] : [ "lightmode" ];
-		document.querySelectorAll("#darkmodeToggle>svg")[ !this.darkmode ? 0 : 1 ].classList = [ ];
-		document.querySelectorAll("#darkmodeToggle>svg")[ this.darkmode ? 0 : 1 ].classList = [ "disabled" ];
+		let q = document.querySelectorAll("#darkmodeToggle>svg");
+		q[ !this.darkmode ? 0 : 1 ].classList = [ ];
+		q[ this.darkmode ? 0 : 1 ].classList = [ "disabled" ];
 	}
 	
 	darkModeCanvas(){
-		if(typeof this.pBuild !== 'undefined'){
-			if(typeof this.pBuild.aboutme !== 'undefined'){
+		if(typeof this.pBuild !== u){
+			if(typeof this.pBuild.aboutme !== u){
 				this.pBuild.aboutme.setDarkmode( this.darkmode );
 			}
 		}
@@ -205,8 +207,8 @@ class Global {
 	
 	static showSavedDM( dm ){
 		let rL = document.querySelectorAll("#cookierebel li");
-		rL[ !dm ? 0 : 1 ].classList = [ "selected"];
-		rL[ dm ? 0 : 1 ].classList = [ "unselected" ];
+		rL[ !dm ? 0 : 1 ].classList = [ s];
+		rL[ dm ? 0 : 1 ].classList = [ us ];
 	}
 
 	// setDarkmodeRebel()
@@ -230,6 +232,13 @@ class Global {
 						END 
 					Global Class
 ***********************************************************/
+
+//This is so ugly, but it cuts bytes I tell you, BYTES!
+const c = "click";
+const u = "undefined";
+const sS = '<svg tabindex="0" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ';
+const s = "selected";
+const us = "un"+s;
 
 /**********************************************************
 					Page Builder Class
@@ -268,25 +277,25 @@ class PageBuilder {
 		window.onscroll = PageBuilder.showTopButton;
 		
 		// Click events
-		document.getElementById("loadmore").addEventListener("click", this.clickLoadmore);
-		document.getElementById("darkmodeToggle").addEventListener("click", this.clickDarkmodetoggle);
+		document.getElementById("loadmore").addEventListener(c, this.clickLoadmore);
+		document.getElementById("darkmodeToggle").addEventListener(c, this.clickDarkmodetoggle);
 		let rTop = document.getElementById("returnTop");
-		rTop.addEventListener("click", this.clickScrollToTop);
-		rTop.children[0].addEventListener("click", this.clickScrollToTop);
+		rTop.addEventListener(c, this.clickScrollToTop);
+		rTop.children[0].addEventListener(c, this.clickScrollToTop);
 		rTop.children[0].addEventListener("touchstart", this.clickScrollToTop);
 		document.querySelectorAll("#cookierebel li").forEach(( options ) => {
-			options.addEventListener( "click", this.clickCookieRebel );
+			options.addEventListener( c, this.clickCookieRebel );
 		});
 		document.querySelectorAll("#filters>ul>li").forEach(( filterBtn ) => {
-			filterBtn.addEventListener( "click", PageBuilder.clickFilter );
-		});	
-		document.querySelectorAll('a').forEach(( aAnchors ) => aAnchors.addEventListener("click", PageBuilder.handleHrefClick) );
+			filterBtn.addEventListener( c, PageBuilder.clickFilter );
+		});
+		document.querySelectorAll('a').forEach(( aAnchors ) => aAnchors.addEventListener(c, PageBuilder.handleHrefClick) );
 	}
 
 	static handleHrefClick( e ){
 		//e.preventDefault();
 		//console.log(e, this)
-		if(typeof e.target.hash !== 'undefined'){
+		if(typeof e.target.hash !== u){
 			if(e.target.hash[0] === "#"){
 				e.preventDefault();
 				document.querySelector(this.getAttribute("href")).scrollIntoView({
@@ -368,7 +377,7 @@ class PageBuilder {
 	static htmlFilterClear(){
 		let filterBtns = document.querySelectorAll("#filters>ul>li");
 		filterBtns.forEach((filterBtn) => {
-			filterBtn.classList = [ "unselected" ];
+			filterBtn.classList = [ us ];
 		});
 	}
 	
@@ -376,7 +385,7 @@ class PageBuilder {
 		let filterHTML = "";
 		
 		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
-			let selectedID = value.enabled ? "selected" : "unselected";
+			let selectedID = value.enabled ? s : us;
 			filterHTML += `<li tabindex="0" class="${ selectedID }">${ value.friendly_name }</li>`;
 			if(value.enabled){
 				PageBuilder.changeTitle( value.friendly_name );
@@ -393,7 +402,7 @@ class PageBuilder {
 		window.history.replaceState('', '', '/#' + filter);
 		
 		PageBuilder.htmlFilterClear();
-		e.srcElement.classList = [ "selected" ];
+		e.srcElement.classList = [ s ];
 		main.setFilter( filter );	
 		PageBuilder.changeTitle( e.srcElement.innerText );
 
@@ -401,7 +410,7 @@ class PageBuilder {
 		document.getElementById('intro').style.display = "none";
 	}
 	static changeTitle( change ){
-		let titletext = './Martijn.sh > ' + change;
+		let titletext = Settings.title + change;
 		document.getElementsByTagName('h1')[0].innerText = titletext;
 		document.title = titletext;
 	}
@@ -591,7 +600,7 @@ class PostBuilder {
 	
 	static markdownProcess( content ){
 		let p = content;
-		if( typeof p === 'undefined' || p == ""){
+		if( typeof p === u || p == ""){
 			return "";
 		}
 		//Simple pattern to match standalone URL's, probably will have many edge cases
@@ -654,7 +663,7 @@ class PostBuilder {
 			//Open video when loading only the post
 			let expandOption = document.getElementsByClassName("videoExpand")
 			if( expandOption.length > 0 ){
-				const cE = new Event("click");
+				const cE = new Event(c);
 				expandOption[0].dispatchEvent(cE);
 			}
 		}
@@ -731,17 +740,17 @@ class PostBuilder {
 	buildTitlePost(post){
 		// 1):
 		let title = post.post.name;
-		let hostnamePost = typeof(post.post.url) !== 'undefined' ? "(" + new URL( post.post.url ).hostname + ")": "";
+		let hostnamePost = typeof(post.post.url) !== u ? "(" + new URL( post.post.url ).hostname + ")": "";
 
 		// 2):
-		if(typeof post.post.url !== 'undefined'){
+		if(typeof post.post.url !== u){
 			// Seperated <a> link for preview and url 
 			//	- To break the underline between elements
 			title = `<a href="${post.post.url}">${title}</a> `;
 			title += `<a href="${post.post.url}"><sub>${hostnamePost}</sub></a>`;
 
 			if( post.post.url.split('.').pop() == 'mp4' ){
-				title += '<svg class="videoExpand" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
+				title += sS + ' class="videoExpand"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" ></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
 			}
 		}
 		
@@ -755,7 +764,7 @@ class PostBuilder {
 
 
 		for (const key of document.querySelectorAll('#filters li') ) {
-			key.classList = [ "selected" ]
+			key.classList = [ s ]
 		}
 	}
 	
@@ -768,7 +777,7 @@ class PostBuilder {
 			let mselect = Settings.mSelect;
 			for ( const [key, value] of Object.entries( Community_filters[Settings.mSelect] ) ) {
 				if(( value.enabled || setall ) && mselect == Settings.mSelect){
-					if(typeof value.manual_posts !== 'undefined'){
+					if(typeof value.manual_posts !== u){
 						value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
 					}
 
@@ -817,7 +826,7 @@ class PostBuilder {
 	handleErrorCommunity( mSel ){
 		//ignore error if mSelect has been changed between Mirrors
 		if(mSel == Settings.mSelect){
-			if(Settings.mSelect < Settings.mirror.length){
+			if(Settings.mSelect < Settings.mirror.length-1){
 				Settings.mSelect++;
 				//this.resetFilters();
 				this.refresh();
@@ -855,9 +864,10 @@ class PostBuilder {
 			post.content = this.postToReadMore( post.content );
 			// Posts are shared or written, link = shared
 			let forceBy = ( post.c_id != Community_filters[Settings.mSelect]['blog'].c_id[0] && post.id != Community_filters[Settings.mSelect]['blog'].manual_posts[0] )
-			let sharedBy = ( typeof post.url !== "undefined" && forceBy ) ? "Shared by" : "By";
+			let sharedBy = ( typeof post.url !== u && forceBy ) ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
-			let votetext = post.up >= 20 ? post.up + ' <svg xmlns="http://www.w3.org/2000/svg" aria-describedby="likeText" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
+
+			let votetext = post.up >= 20 ? post.up + ' ' + sS + 'role="img" aria-describedby="likeText"><title id="likeText">Interact with this post on the Fediverse</title><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : "";
 			
 			// Lemmyverse allows other Lemmy users to set their preferred instance
 			//	- remove https before instance
@@ -869,7 +879,7 @@ class PostBuilder {
 					   
 						<div>
 						  <span class="fade">
-							<b> ${sharedBy} ${Settings.firstname}, ${post.date}</b><i> <a class="onepagelink" href="${permalink}">permalink</a><a class="cText" cTitle="Share" href="${location.origin}${permalink}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sh"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></a></i>
+							<b> ${sharedBy} ${Settings.firstname}, ${post.date}</b><i> <a class="onepagelink" href="${permalink}">permalink</a><a class="cText" title="Copy/Share/Enjoy" cTitle="Share" href="${location.origin}${permalink}">${sS} class="sh"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></a></i>
 						  </span>
 						</div>
 					</header>
@@ -889,16 +899,16 @@ class PostBuilder {
 		this.DOMLocationArticles.innerHTML = resultBuilder;
 			
 		document.querySelectorAll(`.community${c_id} .onepagelink`).forEach(( pm ) => {
-			pm.addEventListener( "click", this.overridePermalink );
+			pm.addEventListener( c, this.overridePermalink );
 		});
 
 		document.querySelectorAll(`a`).forEach(( pm ) => {
-			pm.removeEventListener( "click", PageBuilder.handleHrefClick );
-			pm.addEventListener( "click", PageBuilder.handleHrefClick );
+			pm.removeEventListener( c, PageBuilder.handleHrefClick );
+			pm.addEventListener( c, PageBuilder.handleHrefClick );
 		});
 
 		document.querySelectorAll(`.videoExpand`).forEach(( vE ) => {
-			vE.addEventListener( "click", this.expandOption );
+			vE.addEventListener( c, this.expandOption );
 		});
 
 		
@@ -930,10 +940,10 @@ class PostBuilder {
 
 	addOverrideEvents(){
 		document.querySelectorAll(".uncollapse").forEach(( el ) => {
-			el.addEventListener( "click", this.collapseReadmore );
+			el.addEventListener( c, this.collapseReadmore );
 		});
 		document.querySelectorAll(".onepagelink").forEach(( pm ) => {
-			pm.addEventListener( "click", this.overridePermalink );
+			pm.addEventListener( c, this.overridePermalink );
 		});
 	}
 
@@ -1001,7 +1011,7 @@ class PostBuilder {
 			}
 			
 			newcontent = content.substring( 0, countCutoffLength )
-							+ '<p class="uncollapse">Read more</p><div class="collapse">' 
+							+ '<p class="uncollapse" tabindex="0">Read more</p><div class="collapse">'
 							+ content.substring( countCutoffLength )
 							+ "</div>";
 		}
@@ -1090,7 +1100,7 @@ class DrawAboutMe {
 	}
 	
 	bindEvents(){
-		this.canvas.addEventListener("click", this.clickCanvas );
+		this.canvas.addEventListener(c, this.clickCanvas );
 		
 		window.addEventListener('resize', () => {
 			this.init();
@@ -1215,7 +1225,7 @@ class DrawAboutMe {
 		this.ctx.clearRect(0, 0, this.htmlWidth, this.htmlHeight);
 	}
 	
-	runEngine(){		
+	runEngine(){
 		if(!this.running){
 			this.running = true;
 			this.frame();

@@ -16,21 +16,16 @@ body{
 	background: #F5F5F5;
 }
 
+.darkmode a,
+.darkmode h1,
 .darkmode {
 	color: #F5F5F5;
 	background: #181818;
 }
 
-.darkmode a{
-	color: #F5F5F5;
-}
-
+.darkmode #filters li,
 .darkmode .unselected{
-	border: solid 0.2em #fff9f95e !important;
-}
-
-.darkmode h1{
-	color: #F5F5F5;
+	border: solid 0.2em #fff9f95e;
 }
 
 .darkmode .fade>b{
@@ -80,7 +75,6 @@ h1>a,
 
 h2>a>sub{
 	font-size: 0.5em;
-	/*color:#242424*/
 }
 
 .sh,
@@ -213,13 +207,8 @@ article>div{
 	max-width: 15em;
 }
 
+blockquote + br + br,
 blockquote + br{
-	position: absolute;
-	visibility: hidden;
-    display: none;
-}
-
-blockquote + br + br{
 	position: absolute;
 	visibility: hidden;
     display: none;
@@ -394,6 +383,7 @@ footer>*{
 	margin-bottom: 0.2em;
 	margin-left: 1em;
 }
+
 p{
 	width: fit-content;
 	text-align: justify;
