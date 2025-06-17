@@ -1186,7 +1186,6 @@ class DrawAboutMe {
 		this.canvas.setAttribute('height', this.htmlHeight * this.dpi);
 		this.ctx = this.canvas.getContext("2d");
 		this.ctx.scale(this.dpi,this.dpi)
-		//this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 	}
 	
 	prime(){
@@ -1349,7 +1348,7 @@ class FireElementCanvas {
 	}
 	
 	bounce(){
-		let cvWidth = this.canvas.clientWidth + 6;
+		let cvWidth = this.canvas.clientWidth + 8;
 		let cvHeight = this.canvas.clientHeight + 6;
 				
 		if (this.coord.x <= 0) {
