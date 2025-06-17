@@ -1039,6 +1039,7 @@ class DrawAboutMe {
 		this.drawSparks = this.drawSparks.bind(this);
 		this.clickCanvas = this.clickCanvas.bind(this);
 		this.frame = this.frame.bind(this);
+		this.resetCanvas = this.resetCanvas.bind(this);
 		
 		this.fullLength = 0;
 		this.sparks = [ ];
@@ -1047,6 +1048,7 @@ class DrawAboutMe {
 		
 		this.clickedAmount = 0;
 		this.level = 0;
+		this.setDpi();
 		
 		this.init();
 		this.firstSpark();
@@ -1058,6 +1060,10 @@ class DrawAboutMe {
 	init(){
 		this.rescale();
 		this.prime();
+	}
+
+	setDpi(){
+		this.dpi = window.devicePixelRatio;
 	}
 	
 	firstSpark(){
@@ -1072,8 +1078,7 @@ class DrawAboutMe {
 	
 	newFire( type, lifetime=-1 ){
 		let title = About_me[ this.selectedSpark ];
-		//let source = this.getCenter();
-		 let source = this.mSpark.getPos();
+		let source = this.mSpark.getPos();
 		this.selectedSpark++;
 		if( this.selectedSpark >= About_me.length ) this.selectedSpark = 0;
 		
@@ -1109,10 +1114,16 @@ class DrawAboutMe {
 		});
 		
 		//Redraw when window is refocused
-		document.addEventListener("visibilitychange", this.drawSparks);
-		window.addEventListener("orientationchange", this.drawSparks);
-		window.addEventListener("focus", this.drawSparks);
-		window.addEventListener("pageshow", this.drawSparks);
+		document.addEventListener("visibilitychange", this.resetCanvas);
+		window.addEventListener("orientationchange", this.resetCanvas);
+		window.addEventListener("focus", this.resetCanvas);
+		window.addEventListener("pageshow", this.resetCanvas);
+	}
+
+	resetCanvas(){
+		this.setDpi();
+		this.init();
+		this.drawSparks();
 	}
 	
 	clickCanvas(e){
@@ -1171,15 +1182,15 @@ class DrawAboutMe {
 		//const ratio = Math.ceil(window.devicePixelRatio);
 		
 		this.fullLength = (this.htmlWidth * 2) + (this.htmlHeight * 2);
-		this.canvas.setAttribute('width', this.htmlWidth);
-		this.canvas.setAttribute('height', this.htmlHeight);
+		this.canvas.setAttribute('width', this.htmlWidth  * this.dpi);
+		this.canvas.setAttribute('height', this.htmlHeight * this.dpi);
 		this.ctx = this.canvas.getContext("2d");
-		//this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+		this.ctx.scale(this.dpi,this.dpi)
 	}
 	
 	prime(){
 		this.clearCanvas();
-		this.ctx.font = "1.3em Courier New, monospace";
+		this.ctx.font = "1.2em Courier New, monospace";
 		this.ctx.fillStyle = this.darkmode ? "white" : "black";
 	}
 	
@@ -1337,8 +1348,8 @@ class FireElementCanvas {
 	}
 	
 	bounce(){
-		let cvWidth = this.canvas.width;
-		let cvHeight = this.canvas.height;
+		let cvWidth = this.canvas.clientWidth + 8;
+		let cvHeight = this.canvas.clientHeight + 6;
 				
 		if (this.coord.x <= 0) {
 			//Snap item back into border for literal edge cases
