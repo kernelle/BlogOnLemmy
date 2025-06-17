@@ -7,59 +7,38 @@ let Settings = {
 	lemmy_instance: "0d.gs",
 	// I use a CDN for the actual API requests
 	//    if you don't use this then make it the same as lemmy_instance
-	mirror: [ "cdn.0d.gs", "lemmy.ml" ],
+	mirror: [ "cdn.0d.gs" , "lemmy.ml"],
 	mSelect: 0
 }
 
 // Lemmy's API only supports community_id on user profiles for now
-let Community_filters = [ {
+// - Arrays are as multidimensional as the amount of mirrors
+let Community_filters = {
 	"blog": {
 		enabled: true,
-		c_id: [ 154 ],
-		manual_posts: [ 5074952 ],
+		c_id: [ [ 154 ], [ 331226 ] ],
+		manual_posts: [ [ 5074952 ], [ 30343141 ] ],
 		//c_name: [ "self@0d.gs" ],
 		friendly_name: "Blog"
 	},
 	"linkdumps": {
 		enabled: false,
-		c_id: [ 59105 ],
+		c_id: [ [ 59105 ], [ 974974 ] ],
 		//c_name: [ "linkdumps@0d.gs" ],
 		friendly_name: "LinkDumps" 
 	},
 	"news": {
 		enabled: false,
-		c_id: [ 884, 58587 ],
+		c_id: [ [ 884, 58587 ], [351392, 664715] ],
 		//c_name: [ "belgium@0d.gs" ],
 		friendly_name: "News" 
 	},
 	"all": {
 		enabled: false,
-		c_id: [ 2547 ],
+		c_id: [ [ 2547 ], [85477] ],
 		friendly_name: "All"
 	}
-},{
-	"blog": {
-		enabled: true,
-		c_id: [ 331226 ],
-		manual_posts: [ 30343141 ],
-		friendly_name: "Blog",
-	},
-	"linkdumps": {
-		enabled: false,
-		c_id: [ 974974 ],
-		friendly_name: "LinkDumps"
-	},
-	"news": {
-		enabled: false,
-		c_id: [351392, 664715],
-		friendly_name: "News",
-	},
-	"all": {
-		enabled: false,
-		c_id: [85477],
-		friendly_name: "All"
-	}
-}];
+};
 
 const About_me = [
 	"Electronics–ICT",
@@ -133,7 +112,7 @@ class Global {
 		// Check hash for filter
 		if(window.location.hash) {
 			let hash = window.location.hash;
-			for (const [key, value] of Object.entries(Community_filters[Settings.mSelect] )) {
+			for (const [key, value] of Object.entries(Community_filters )) {
 				if( '#' + key === hash.toLowerCase() ){
 					Global.filterClear();
 
@@ -152,11 +131,9 @@ class Global {
 	}
 
 	static setMirrorForKey( status, keyType ){
-		for (let i = 0; i < Community_filters.length;i++ ) {
-			Community_filters[i][ keyType ].enabled = status;
-		}
+		Community_filters[ keyType ].enabled = status;
 	}
-	
+
 	/*		 
 		START GLOBAL FUNCTIONS
 	*/
@@ -222,7 +199,7 @@ class Global {
 	}
 	
 	static filterClear(){
-		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+		for (const [key, value] of Object.entries(Community_filters)) {
 			Global.setMirrorForKey(false, key);
 		}
 	}
@@ -384,7 +361,7 @@ class PageBuilder {
 	static buildFilters(){
 		let filterHTML = "";
 		
-		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+		for (const [key, value] of Object.entries(Community_filters)) {
 			let selectedID = value.enabled ? s : us;
 			filterHTML += `<li tabindex="0" class="${ selectedID }">${ value.friendly_name }</li>`;
 			if(value.enabled){
@@ -474,6 +451,7 @@ class PageBuilder {
 			let header = document.getElementsByTagName('header')[0];
 			if(header.getBoundingClientRect().top <= doc.scrollTop){
 				// Asynchronous smooth scroll to top
+				// - synchronous scrolls can be interrupted by DOM changes
 				const mutObserve = new MutationObserver(() => {
 					mutObserve.disconnect();
 					if(header.getBoundingClientRect().top <= doc.scrollTop){
@@ -757,8 +735,9 @@ class PostBuilder {
 		return title;
 	}
 
+	// Select all filters
 	setAll( ){
-		for (const [key, value] of Object.entries(Community_filters[Settings.mSelect])) {
+		for (const [key, value] of Object.entries(Community_filters)) {
 			Global.setMirrorForKey(true, key);
 		}
 
@@ -775,13 +754,13 @@ class PostBuilder {
 
 		if(this.pagetype === "filters"){
 			let mselect = Settings.mSelect;
-			for ( const [key, value] of Object.entries( Community_filters[Settings.mSelect] ) ) {
-				if(( value.enabled || setall ) && mselect == Settings.mSelect){
+			for ( const [key, value] of Object.entries( Community_filters ) ) {
+				if(( value.enabled || setall ) && mselect == Settings.mSelect ){
 					if(typeof value.manual_posts !== u){
-						value.manual_posts.forEach((postNr) => this.fetchPost( postNr, false ));
+						value.manual_posts[Settings.mSelect].forEach((postNr) => this.fetchPost( postNr, false ));
 					}
 
-					value.c_id.forEach((el) => {
+					value.c_id[Settings.mSelect].forEach((el) => {
 						this.fetchCommunity( this.loadmorePage, el )
 					});
 
@@ -863,7 +842,7 @@ class PostBuilder {
 			let oldcontent = post.content;
 			post.content = this.postToReadMore( post.content );
 			// Posts are shared or written, link = shared
-			let forceBy = ( post.c_id != Community_filters[Settings.mSelect]['blog'].c_id[0] && post.id != Community_filters[Settings.mSelect]['blog'].manual_posts[0] )
+			let forceBy = ( post.c_id != Community_filters['blog'].c_id[Settings.mSelect][0] && post.id != Community_filters['blog'].manual_posts[Settings.mSelect][0] )
 			let sharedBy = ( typeof post.url !== u && forceBy ) ? "Shared by" : "By";
 			let permalink = "/?post=" + post.id;
 
@@ -1213,6 +1192,7 @@ class DrawAboutMe {
 		if(this.level >= 6){
 			type = "bounce";
 			if(this.countBounceSparks() >= About_me.length){
+				// Destroy sparks after 5 seconds
 				lifetime = 5;
 			}
 		}
