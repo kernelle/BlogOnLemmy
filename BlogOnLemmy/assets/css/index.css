@@ -437,3 +437,7 @@ video{
 	opacity: 1;
 	top: 4em;
 }
+
+code{
+	text-wrap: wrap;
+}
