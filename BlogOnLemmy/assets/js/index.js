@@ -7,7 +7,7 @@ let Settings = {
 	lemmy_instance: "0d.gs",
 	// I use a CDN for the actual API requests
 	//    if you don't use this then make it the same as lemmy_instance
-	mirror: [ "cdn.0d.gs" , "lemmy.ml"],
+	mirror: [ "test.0d.gs" , "lemmy.ml"],
 	mSelect: 0
 }
 
